@@ -44,7 +44,7 @@ export const servicesHero = [
     description: "Trusted professionals for your home electrical needs.",
     buttonText: "Explore Electrician Service",
     price: "Starting from ₹149",
-    image: "/images/services/electrician.jpg",
+    image: "/images/services/professional-electrician.jpg",
     categorySlug: "electrical",
     serviceSlug: "electrical-wiring",
     serviceId: "ps4"

@@ -81,12 +81,12 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { id: 'c1', slug: 'electrical', name: 'Electrical', icon: 'Zap', desc: 'Wiring, panels, appliances', longDescription: 'Professional electricians for repair, installation, wiring, inspections and more.', image: '/images/services/electrician.jpg' },
+  { id: 'c1', slug: 'electrical', name: 'Electrical', icon: 'Zap', desc: 'Wiring, panels, appliances', longDescription: 'Professional electricians for repair, installation, wiring, inspections and more.', image: '/images/services/professional-electrician.jpg' },
   { id: 'c2', slug: 'ac-service', name: 'AC Service', icon: 'Wind', desc: 'Repair, install, maintenance', longDescription: 'Expert AC servicing, repair, and installation for all brands and types of air conditioners.', image: '/images/services/ac-repair.jpg' },
   { id: 'c3', slug: 'plumbing', name: 'Plumbing', icon: 'Droplets', desc: 'Leaks, drains, pipes', longDescription: 'Reliable plumbing services for leaks, pipe repairs, bathroom fittings, and drain cleaning.', image: '/images/services/plumbing.jpg' },
   { id: 'c4', slug: 'appliance-repair', name: 'Appliance Repair', icon: 'Wrench', desc: 'Washing machines, fridges', longDescription: 'Certified technicians to repair washing machines, refrigerators, microwaves, and more.', image: '/images/services/appliance-repair.jpg' },
-  { id: 'c5', slug: 'cctv', name: 'CCTV', icon: 'Camera', desc: 'Security, surveillance', longDescription: 'Complete CCTV installation, maintenance, and repair services for home and office security.', image: '/images/services/cctv-security.jpg' },
-  { id: 'c6', slug: 'ro-water', name: 'RO / Water', icon: 'Droplet', desc: 'Purifier installation, repair', longDescription: 'RO and water purifier installation, filter replacement, and maintenance services.', image: '/images/services/ro-water.jpg' },
+  { id: 'c5', slug: 'cctv', name: 'CCTV', icon: 'Camera', desc: 'Security, surveillance', longDescription: 'Complete CCTV installation, maintenance, and repair services for home and office security.', image: '/images/services/cctv-installation.jpg' },
+  { id: 'c6', slug: 'ro-water', name: 'RO / Water', icon: 'Droplet', desc: 'Purifier installation, repair', longDescription: 'RO and water purifier installation, filter replacement, and maintenance services.', image: '/images/services/ro-water-service.jpg' },
   { id: 'c7', slug: 'cleaning', name: 'Cleaning', icon: 'Sparkles', desc: 'Deep clean, standard clean', longDescription: 'Professional deep cleaning services for homes, bathrooms, kitchens, and sofas.', image: '/images/services/home-cleaning.jpg' },
   { id: 'c8', slug: 'installation', name: 'Installation', icon: 'Tool', desc: 'TV mounting, furniture', longDescription: 'Handyman services for TV wall mounting, furniture assembly, and shelf installations.', image: '/images/services/installation.jpg' },
 ];
