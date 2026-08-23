@@ -1,32 +1,72 @@
-# React + TypeScript + Vite
+# 🏡 HomePro - Premium Home Service Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+HomePro is a comprehensive, modern, and premium home service and electrician booking platform. It connects customers with top-rated professionals for services like electrical repairs, plumbing, HVAC, cleaning, and more.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **For Customers:** 
+  - Browse a wide variety of home services.
+  - Seamless booking and scheduling flow.
+  - Secure authentication and profile management.
+  - Track booking statuses in real-time.
+- **For Technicians:** 
+  - Dedicated dashboard to view, accept, and manage active jobs.
+  - Performance tracking and earnings overview.
+- **Admin Panel:**
+  - Complete control over services, users, technicians, and bookings.
+  - Review and coupon management.
+- **Premium UI/UX:** 
+  - Modern dark-themed design with smooth glassmorphism effects.
+  - Fully responsive and interactive interface.
 
-## React Compiler
+## 🛠️ Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React, TypeScript, Vite, React Router, Framer Motion, Lucide Icons, CSS (Custom Design System).
+- **Backend:** Node.js, Express, MongoDB (Mongoose), JWT Authentication.
+- **Payments:** Razorpay Integration.
 
-## Expanding the Oxlint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Follow these steps to run the project locally.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### 1. Setup the Backend
+
+Navigate to the backend directory and install dependencies:
+```bash
+cd backend
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Create a `.env` file in the `backend` directory with your MongoDB URI and JWT configurations:
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=30d
+```
+
+Start the backend development server:
+```bash
+npm run dev
+```
+
+### 2. Setup the Frontend
+
+Open a new terminal window in the root directory of the project and install dependencies:
+```bash
+npm install
+```
+
+Start the frontend development server:
+```bash
+npm run dev
+```
+
+The frontend will be running at `http://localhost:5173`.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome. Feel free to check issues page if you want to contribute.
+
+## 📄 License
+
+This project is licensed under the MIT License.
