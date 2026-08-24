@@ -7,7 +7,10 @@ import {
   getAllTechnicians, 
   approveTechnician, 
   getAllBookings,
-  getAuditLogs
+  getAuditLogs,
+  addService,
+  updateService,
+  deleteService
 } from '../controllers/adminController';
 
 const router = express.Router();
@@ -23,5 +26,10 @@ router.get('/technicians', getAllTechnicians);
 router.put('/technicians/:id/approve', approveTechnician);
 router.get('/bookings', getAllBookings);
 router.get('/audit-logs', getAuditLogs);
+
+// Service Management
+router.post('/services', addService);
+router.put('/services/:id', updateService);
+router.delete('/services/:id', deleteService);
 
 export default router;

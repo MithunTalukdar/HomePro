@@ -13,19 +13,54 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     const totalUsers = await User.countDocuments({ role: 'CUSTOMER' });
     const totalTechnicians = await User.countDocuments({ role: 'TECHNICIAN' });
     const activeTechnicians = await TechnicianProfile.countDocuments({ verificationStatus: 'VERIFIED' });
+    const inactiveTechnicians = totalTechnicians - activeTechnicians;
     
+    const totalBookings = await Booking.countDocuments();
+    const pendingBookings = await Booking.countDocuments({ status: { $in: ['REQUESTED', 'ASSIGNED'] } });
+    const confirmedBookings = await Booking.countDocuments({ status: 'CONFIRMED' });
+    const completedBookings = await Booking.countDocuments({ status: 'COMPLETED' });
+    const cancelledBookings = await Booking.countDocuments({ status: 'CANCELLED' });
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todaysBookings = await Booking.countDocuments({ createdAt: { $gte: today } });
-    const activeBookings = await Booking.countDocuments({ status: { $nin: ['COMPLETED', 'CANCELLED'] } });
-    const completedBookings = await Booking.countDocuments({ status: 'COMPLETED' });
+    
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    // Calculate revenue (mock calculation by summing up 'price' strings - assuming it's structured predictably or just count for now)
     const allCompleted = await Booking.find({ status: 'COMPLETED' });
-    const revenue = allCompleted.reduce((acc, booking) => {
-       const amount = parseInt(booking.price.replace(/\\D/g, '')) || 0;
-       return acc + amount;
-    }, 0);
+    
+    let totalRevenue = 0;
+    let todaysRevenue = 0;
+    let monthlyRevenue = 0;
+    
+    allCompleted.forEach(booking => {
+      const amount = parseInt(booking.price.replace(/\\D/g, '')) || 0;
+      totalRevenue += amount;
+      
+      const bookingDate = new Date(booking.createdAt);
+      if (bookingDate >= today) {
+        todaysRevenue += amount;
+      }
+      if (bookingDate >= startOfMonth) {
+        monthlyRevenue += amount;
+      }
+    });
+
+    // Service performance
+    const servicePerformanceAgg = await Booking.aggregate([
+      { $group: { _id: '$serviceName', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    const servicePerformance = servicePerformanceAgg.map(s => ({ name: s._id, count: s.count }));
+
+    // Technician performance (just general stats for now)
+    const activeJobs = await Booking.countDocuments({ status: { $in: ['ON_THE_WAY', 'ARRIVED', 'IN_PROGRESS'] } });
+    const technicianPerformance = {
+      totalAssigned: pendingBookings + activeJobs, // Approximation
+      activeJobs,
+      completedJobs: completedBookings,
+      pendingJobs: pendingBookings
+    };
 
     const recentBookings = await Booking.find().sort({ createdAt: -1 }).limit(5);
 
@@ -33,10 +68,17 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       totalUsers,
       totalTechnicians,
       activeTechnicians,
-      todaysBookings,
-      activeBookings,
+      inactiveTechnicians,
+      totalBookings,
+      pendingBookings,
+      confirmedBookings,
       completedBookings,
-      revenue,
+      cancelledBookings,
+      totalRevenue,
+      todaysRevenue,
+      monthlyRevenue,
+      servicePerformance,
+      technicianPerformance,
       recentBookings
     });
   } catch (error: any) {
@@ -48,7 +90,19 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
 export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const users = await User.find({ role: 'CUSTOMER' }).select('-passwordHash').sort({ createdAt: -1 });
-    res.json(users);
+    
+    // Get booking counts for all users
+    const usersWithBookings = await Promise.all(
+      users.map(async (user) => {
+        const totalBookings = await Booking.countDocuments({ customerId: user._id });
+        return {
+          ...user.toObject(),
+          totalBookings
+        };
+      })
+    );
+    
+    res.json(usersWithBookings);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -77,13 +131,23 @@ export const updateUserStatus = async (req: AuthRequest, res: Response): Promise
 export const getAllTechnicians = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const technicians = await User.find({ role: 'TECHNICIAN' }).select('-passwordHash').sort({ createdAt: -1 });
-    // Join with TechnicianProfile in frontend or fetch separately. We will do a simple lean fetch.
     const profiles = await TechnicianProfile.find();
     
-    const combined = technicians.map(t => {
+    const combined = await Promise.all(technicians.map(async (t) => {
       const profile = profiles.find(p => p.userId.toString() === t._id.toString());
-      return { ...t.toObject(), profile };
-    });
+      
+      const assignedJobs = await Booking.countDocuments({ technicianId: t._id });
+      const completedJobs = await Booking.countDocuments({ technicianId: t._id, status: 'COMPLETED' });
+      
+      return { 
+        ...t.toObject(), 
+        profile,
+        stats: {
+          assignedJobs,
+          completedJobs
+        }
+      };
+    }));
     
     res.json(combined);
   } catch (error: any) {
@@ -125,6 +189,58 @@ export const getAuditLogs = async (req: AuthRequest, res: Response): Promise<voi
   try {
     const logs = await AuditLog.find().sort({ createdAt: -1 }).limit(100);
     res.json(logs);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route   POST /api/admin/services
+export const addService = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { title, description, category, startingPrice, estimatedDuration, image, inclusions, exclusions, isActive } = req.body;
+    const newService = await Service.create({
+      title,
+      description,
+      category,
+      startingPrice,
+      estimatedDuration,
+      image,
+      inclusions,
+      exclusions,
+      isActive
+    });
+    await logAdminAction(req.user!._id, req.user!.name, 'ADD_SERVICE', newService._id, 'Service', `Service ${title} created`);
+    res.status(201).json(newService);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route   PUT /api/admin/services/:id
+export const updateService = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const service = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!service) {
+      res.status(404).json({ message: 'Service not found' });
+      return;
+    }
+    await logAdminAction(req.user!._id, req.user!.name, 'UPDATE_SERVICE', service._id, 'Service', `Service ${service.title} updated`);
+    res.json(service);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route   DELETE /api/admin/services/:id
+export const deleteService = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const service = await Service.findByIdAndDelete(req.params.id);
+    if (!service) {
+      res.status(404).json({ message: 'Service not found' });
+      return;
+    }
+    await logAdminAction(req.user!._id, req.user!.name, 'DELETE_SERVICE', service._id, 'Service', `Service ${service.title} deleted`);
+    res.json({ message: 'Service deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

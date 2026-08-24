@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchApi } from '../../services/api';
-import { Users, Wrench, Calendar, DollarSign, Activity, CheckCircle } from 'lucide-react';
+import { Users, Wrench, Calendar, DollarSign, Activity, CheckCircle, XCircle, AlertCircle, TrendingUp, BarChart2, Briefcase } from 'lucide-react';
 
 export function DashboardOverview() {
   const [stats, setStats] = useState<any>(null);
@@ -22,16 +22,24 @@ export function DashboardOverview() {
   };
 
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>Loading stats...</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><span className="dot-pulse">...</span></div>;
   }
 
   const statCards = [
     { label: 'Total Customers', value: stats?.totalUsers || 0, icon: Users, color: '#3b82f6' },
-    { label: 'Verified Techs', value: stats?.activeTechnicians || 0, icon: Wrench, color: '#10b981' },
-    { label: 'Total Revenue', value: `₹${stats?.revenue?.toLocaleString() || 0}`, icon: DollarSign, color: '#8b5cf6' },
-    { label: "Today's Bookings", value: stats?.todaysBookings || 0, icon: Activity, color: '#f59e0b' },
-    { label: 'Active Bookings', value: stats?.activeBookings || 0, icon: Calendar, color: '#06b6d4' },
+    { label: 'Total Technicians', value: stats?.totalTechnicians || 0, icon: Briefcase, color: '#6366f1' },
+    { label: 'Active Technicians', value: stats?.activeTechnicians || 0, icon: Wrench, color: '#10b981' },
+    { label: 'Inactive Techs', value: stats?.inactiveTechnicians || 0, icon: AlertCircle, color: '#ef4444' },
+    
+    { label: 'Total Bookings', value: stats?.totalBookings || 0, icon: Calendar, color: '#8b5cf6' },
+    { label: 'Pending Bookings', value: stats?.pendingBookings || 0, icon: Activity, color: '#f59e0b' },
+    { label: 'Confirmed Bookings', value: stats?.confirmedBookings || 0, icon: CheckCircle, color: '#0ea5e9' },
     { label: 'Completed Jobs', value: stats?.completedBookings || 0, icon: CheckCircle, color: '#14b8a6' },
+    { label: 'Cancelled Bookings', value: stats?.cancelledBookings || 0, icon: XCircle, color: '#f43f5e' },
+    
+    { label: 'Total Revenue', value: `₹${stats?.totalRevenue?.toLocaleString() || 0}`, icon: DollarSign, color: '#10b981' },
+    { label: "Today's Revenue", value: `₹${stats?.todaysRevenue?.toLocaleString() || 0}`, icon: TrendingUp, color: '#3b82f6' },
+    { label: 'Monthly Revenue', value: `₹${stats?.monthlyRevenue?.toLocaleString() || 0}`, icon: BarChart2, color: '#8b5cf6' },
   ];
 
   return (
@@ -41,21 +49,78 @@ export function DashboardOverview() {
         <p style={{ color: 'var(--text-muted)' }}>Welcome back to the admin command center.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: `${stat.color}20`, color: stat.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size={28} />
+            <div key={index} style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '1rem', transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'default' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)' }} onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}>
+              <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: `${stat.color}15`, color: stat.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon size={24} />
               </div>
-              <div>
-                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{stat.label}</div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 700 }}>{stat.value}</div>
+              <div style={{ overflow: 'hidden' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.value}</div>
               </div>
             </div>
           );
         })}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        
+        {/* Service Performance */}
+        <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', padding: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Activity size={18} color="var(--primary)" /> Service Performance
+          </h2>
+          {stats?.servicePerformance?.length === 0 ? (
+            <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>No service data available</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {stats?.servicePerformance?.map((service: any, index: number) => {
+                const max = Math.max(...stats.servicePerformance.map((s: any) => s.count));
+                const percentage = (service.count / max) * 100;
+                return (
+                  <div key={index}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                      <span style={{ fontWeight: 500 }}>{service.name}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>{service.count} bookings</span>
+                    </div>
+                    <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: `${percentage}%`, height: '100%', background: 'linear-gradient(90deg, var(--primary), var(--primary-light))', borderRadius: '4px' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Technician Performance Overview */}
+        <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', padding: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Briefcase size={18} color="var(--primary)" /> Technician Workload
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#3b82f6', marginBottom: '0.5rem' }}>{stats?.technicianPerformance?.totalAssigned || 0}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Total Assigned</div>
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#10b981', marginBottom: '0.5rem' }}>{stats?.technicianPerformance?.activeJobs || 0}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Active Jobs</div>
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#8b5cf6', marginBottom: '0.5rem' }}>{stats?.technicianPerformance?.completedJobs || 0}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Completed Jobs</div>
+            </div>
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#f59e0b', marginBottom: '0.5rem' }}>{stats?.technicianPerformance?.pendingJobs || 0}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Pending Jobs</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchApi } from '../../services/api';
-import { Search, MoreVertical, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Search, MoreVertical, ShieldCheck, AlertTriangle, AlertCircle } from 'lucide-react';
 
 export function Technicians() {
   const [technicians, setTechnicians] = useState<any[]>([]);
@@ -73,6 +73,7 @@ export function Technicians() {
                 <tr style={{ background: 'rgba(0,0,0,0.2)', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Technician</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Experience</th>
+                  <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Jobs (Assigned/Completed)</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Verification</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600, textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -95,29 +96,40 @@ export function Technicians() {
                       <div>{tech.profile?.experience || 'Not set'}</div>
                     </td>
                     <td style={{ padding: '1rem 1.5rem' }}>
+                      <div style={{ fontSize: '0.875rem' }}>
+                        <span style={{ color: '#3b82f6', fontWeight: 600 }}>{tech.stats?.assignedJobs || 0}</span> assigned<br/>
+                        <span style={{ color: '#10b981', fontWeight: 600 }}>{tech.stats?.completedJobs || 0}</span> completed
+                      </div>
+                    </td>
+                    <td style={{ padding: '1rem 1.5rem' }}>
                       {tech.profile?.verificationStatus === 'VERIFIED' ? (
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#10b981', fontSize: '0.875rem', fontWeight: 600 }}>
                           <ShieldCheck size={16} /> Verified
                         </span>
-                      ) : tech.profile?.verificationStatus === 'PENDING' ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#f59e0b', fontSize: '0.875rem', fontWeight: 600 }}>
-                          <AlertTriangle size={16} /> Pending
-                        </span>
                       ) : (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#ef4444', fontSize: '0.875rem', fontWeight: 600 }}>
-                          {tech.profile?.verificationStatus || 'Unknown'}
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#f59e0b', fontSize: '0.875rem', fontWeight: 600 }}>
+                          <AlertCircle size={16} /> {tech.profile?.verificationStatus || 'PENDING'}
                         </span>
                       )}
                     </td>
                     <td style={{ padding: '1rem 1.5rem', textAlign: 'right' }}>
-                      {tech.profile?.verificationStatus !== 'VERIFIED' && (
-                        <button 
-                          onClick={() => handleApprove(tech._id, 'VERIFIED')}
-                          className="btn btn-primary"
-                          style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem', marginRight: '0.5rem' }}
-                        >
-                          Approve
-                        </button>
+                      {tech.profile?.verificationStatus === 'PENDING' && (
+                        <>
+                          <button 
+                            onClick={() => handleApprove(tech._id, 'VERIFIED')}
+                            className="btn btn-primary"
+                            style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem', marginRight: '0.5rem' }}
+                          >
+                            Approve
+                          </button>
+                          <button 
+                            onClick={() => handleApprove(tech._id, 'REJECTED')}
+                            className="btn btn-primary"
+                            style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem', marginRight: '0.5rem', background: '#ef4444', borderColor: '#ef4444' }}
+                          >
+                            Reject
+                          </button>
+                        </>
                       )}
                       <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                         <MoreVertical size={20} />

@@ -61,6 +61,7 @@ export function Users() {
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Name</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Contact Info</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Joined Date</th>
+                  <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Total Bookings</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>Status</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: 600, textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -82,6 +83,9 @@ export function Users() {
                     </td>
                     <td style={{ padding: '1rem 1.5rem', color: 'var(--text-muted)' }}>
                       {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td style={{ padding: '1rem 1.5rem', fontWeight: 600 }}>
+                      {user.totalBookings || 0}
                     </td>
                     <td style={{ padding: '1rem 1.5rem' }}>
                       <span style={{ 

@@ -52,8 +52,15 @@ export function Login() {
         return;
       }
       
-      // Default to home page instead of dashboard
-      navigate('/', { replace: true });
+      // Role-based redirection
+      if (data.role === 'ADMIN' || data.role === 'SUPER_ADMIN') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (data.role === 'TECHNICIAN') {
+        navigate('/technician/dashboard', { replace: true });
+      } else {
+        // Customer default redirect
+        navigate('/', { replace: true });
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to login');
     } finally {
