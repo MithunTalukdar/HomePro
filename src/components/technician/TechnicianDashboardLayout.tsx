@@ -90,7 +90,7 @@ export function TechnicianDashboardLayout() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--background)', display: 'flex' }}>
-      
+
       {/* Desktop Sidebar */}
       <aside style={{ width: '280px', background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'none', flexDirection: 'column', '@media (min-width: 1024px)': { display: 'flex' } } as React.CSSProperties}>
         <div style={{ padding: '2rem' }}>
@@ -101,12 +101,12 @@ export function TechnicianDashboardLayout() {
             <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)' }}>TechPortal</span>
           </Link>
         </div>
-        
+
         <nav style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = location.pathname === link.path;
-            
+
             return (
               <Link key={link.name} to={link.path} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderRadius: 'var(--radius-lg)', textDecoration: 'none', color: isActive ? 'var(--primary)' : 'var(--text-muted)', background: isActive ? 'rgba(37, 99, 235, 0.1)' : 'transparent', fontWeight: isActive ? 600 : 500, transition: 'all 0.2s ease' }}>
                 <Icon size={20} /> {link.name}
@@ -114,7 +114,7 @@ export function TechnicianDashboardLayout() {
             );
           })}
         </nav>
-        
+
         <div style={{ marginTop: 'auto', padding: '2rem', borderTop: '1px solid var(--border)' }}>
           <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, fontSize: '1rem' }}>
             <LogOut size={20} /> Log Out
@@ -132,12 +132,12 @@ export function TechnicianDashboardLayout() {
             </button>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>{navLinks.find(link => location.pathname.includes(link.path))?.name || 'Dashboard'}</h2>
           </div>
-          
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
             <div style={{ position: 'relative', cursor: 'pointer' }}>
               <Bell size={24} color="var(--text-muted)" />
             </div>
-            
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingLeft: '1.5rem', borderLeft: '1px solid var(--border)' }}>
               <div style={{ textAlign: 'right', display: 'none', '@media (min-width: 768px)': { display: 'block' } } as any}>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.name}</div>

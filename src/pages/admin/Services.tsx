@@ -63,7 +63,7 @@ export function Services() {
       setEditingService(null);
       setFormData({
         title: '',
-        category: categories.length > 0 ? categories[0]._id : '',
+        category: '',
         startingPrice: '',
         estimatedDuration: '',
         description: '',
@@ -118,8 +118,7 @@ export function Services() {
       }
     }
   };
-
-  const filteredServices = services.filter(s => s.title.toLowerCase().includes(search.toLowerCase()));
+  const filteredServices = services.filter(s => s.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div>
@@ -200,99 +199,99 @@ export function Services() {
       </div>
 
       {isModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
-            <button onClick={handleCloseModal} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-              <X size={24} />
-            </button>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1.5rem' }}>{editingService ? 'Edit Service' : 'Add Service'}</h2>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}>
+          <div style={{ background: '#111827', border: '1px solid #1f2937', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '700px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', zIndex: 1001 }}>
             
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Service Title</label>
-                <input 
-                  type="text" 
-                  value={formData.title} 
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  required 
-                  className="search-input" 
-                  style={{ width: '100%', background: 'var(--background)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Category</label>
-                <select 
-                  value={formData.category} 
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  required 
-                  className="search-input" 
-                  style={{ width: '100%', background: 'var(--background)', color: 'var(--text)' }}
-                >
-                  <option value="" disabled>Select Category</option>
-                  {categories.map(c => (
-                    <option key={c._id} value={c._id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #1f2937' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#f9fafb', margin: 0 }}>{editingService ? 'Edit Service' : 'Add Service'}</h2>
+              <button onClick={handleCloseModal} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex', padding: '4px' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={{ overflowY: 'auto', paddingRight: '8px' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Starting Price (₹)</label>
-                  <input 
-                    type="number" 
-                    value={formData.startingPrice} 
-                    onChange={(e) => setFormData({...formData, startingPrice: e.target.value})}
-                    required 
-                    className="search-input" 
-                    style={{ width: '100%', background: 'var(--background)' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Estimated Duration</label>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Service Title</label>
                   <input 
                     type="text" 
-                    value={formData.estimatedDuration} 
-                    onChange={(e) => setFormData({...formData, estimatedDuration: e.target.value})}
+                    value={formData.title} 
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
                     required 
-                    placeholder="e.g. 2 hours"
-                    className="search-input" 
-                    style={{ width: '100%', background: 'var(--background)' }}
+                    style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
                   />
                 </div>
-              </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Image URL</label>
-                <input 
-                  type="text" 
-                  value={formData.image} 
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  className="search-input" 
-                  style={{ width: '100%', background: 'var(--background)' }}
-                />
-              </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Category</label>
+                  <select 
+                    value={formData.category} 
+                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    required 
+                    style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                  >
+                    <option value="" disabled>Select Category</option>
+                    {categories.map(c => (
+                      <option key={c._id} value={c._id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Description</label>
-                <textarea 
-                  value={formData.description} 
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  required 
-                  className="search-input" 
-                  style={{ width: '100%', background: 'var(--background)', minHeight: '100px', resize: 'vertical' }}
-                />
-              </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Starting Price (₹)</label>
+                    <input 
+                      type="number" 
+                      value={formData.startingPrice} 
+                      onChange={(e) => setFormData({...formData, startingPrice: e.target.value})}
+                      required 
+                      style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Estimated Duration</label>
+                    <input 
+                      type="text" 
+                      value={formData.estimatedDuration} 
+                      onChange={(e) => setFormData({...formData, estimatedDuration: e.target.value})}
+                      required 
+                      placeholder="e.g. 2 hours"
+                      style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" onClick={handleCloseModal} style={{ padding: '0.75rem 1.5rem', background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', color: 'var(--text)', cursor: 'pointer', fontWeight: 500 }}>
-                  Cancel
-                </button>
-                <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '0.75rem 2rem' }}>
-                  {submitting ? 'Saving...' : 'Save Service'}
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Image URL</label>
+                  <input 
+                    type="text" 
+                    value={formData.image} 
+                    onChange={(e) => setFormData({...formData, image: e.target.value})}
+                    style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#d1d5db', marginBottom: '8px' }}>Description</label>
+                  <textarea 
+                    value={formData.description} 
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    required 
+                    style={{ width: '100%', background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontSize: '1rem', minHeight: '100px', resize: 'vertical', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #1f2937' }}>
+                  <button type="button" onClick={handleCloseModal} style={{ padding: '10px 24px', background: 'transparent', border: '1px solid #4b5563', borderRadius: '6px', color: '#e5e7eb', cursor: 'pointer', fontWeight: 500, fontSize: '0.875rem' }}>
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '10px 24px', fontSize: '0.875rem', borderRadius: '6px' }}>
+                    {submitting ? 'Saving...' : 'Save Service'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
