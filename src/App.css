@@ -2,6 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Header */
@@ -111,7 +113,8 @@
   top: -20%;
   left: 50%;
   transform: translateX(-50%);
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   height: 800px;
   background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, rgba(15,23,42,0) 60%);
   z-index: -1;
@@ -138,6 +141,7 @@
 
 /* Search Bar */
 .search-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   display: flex;
