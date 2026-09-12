@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'backend serverless - no build required'",
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "src/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
+  ]
+}

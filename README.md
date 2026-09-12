@@ -25,41 +25,90 @@ HomePro is a comprehensive, modern, and premium home service and electrician boo
 - **Backend:** Node.js, Express, MongoDB (Mongoose), JWT Authentication.
 - **Payments:** Razorpay Integration.
 
-## 🚀 Getting Started
+## 📁 Project Structure
 
-Follow these steps to run the project locally.
+```
+project-root/
+├── frontend/          # React + Vite SPA
+│   ├── src/           # Components, pages, hooks, context, services
+│   ├── public/        # Static assets (favicon, images, videos)
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── vercel.json    # SPA rewrites (React Router)
+│   └── .env.example
+├── backend/           # Express + MongoDB API
+│   ├── src/
+│   │   ├── config/        # DB connection
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── socket/
+│   │   └── utils/
+│   ├── api/index.ts   # Vercel serverless entry
+│   ├── package.json
+│   ├── vercel.json    # API rewrites
+│   └── .env.example
+├── README.md
+└── .gitignore
+```
+
+## 🚀 Getting Started
 
 ### 1. Setup the Backend
 
-Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 npm install
+cp .env.example .env   # then fill MONGO_URI, JWT_SECRET, SMTP_*, FRONTEND_URL
+npm run dev            # ts-node-dev on http://localhost:5000
+# Production: npm run build && npm start
 ```
 
-Create a `.env` file in the `backend` directory with your MongoDB URI and JWT configurations:
-```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+Required `backend/.env` (see `backend/.env.example`):
+```
+PORT=5000
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=
 JWT_EXPIRES_IN=30d
-```
-
-Start the backend development server:
-```bash
-npm run dev
+FRONTEND_URL=http://localhost:5173
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
 ```
 
 ### 2. Setup the Frontend
 
-Open a new terminal window in the root directory of the project and install dependencies:
 ```bash
+cd frontend
 npm install
+cp .env.example .env   # set VITE_API_URL
+npm run dev            # vite on http://localhost:5173 (proxies /api to :5000)
+npm run build          # production build to frontend/dist
 ```
 
-Start the frontend development server:
-```bash
-npm run dev
+`frontend/.env`:
 ```
+VITE_API_URL=http://localhost:5000          # local
+# VITE_API_URL=https://your-backend.vercel.app  # production
+```
+
+### 3. Vercel Deployment
+
+Deploy as **two separate Vercel projects**:
+
+| Project | Root Directory | Framework | Build Command | Output |
+|---------|---------------|-----------|---------------|--------|
+| frontend | `frontend` | Vite | `npm run build` | `dist` |
+| backend  | `backend`  | Other | `echo 'no build'` (serverless) | - |
+
+- Set `VITE_API_URL` in frontend Vercel env to backend URL.
+- Set `FRONTEND_URL`/`CLIENT_URL` + all `MONGO_*`/`JWT_*`/`SMTP_*` in backend Vercel env.
 
 The frontend will be running at `http://localhost:5173`.
 
