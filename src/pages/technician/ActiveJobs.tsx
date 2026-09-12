@@ -13,9 +13,9 @@ export function ActiveJobs() {
 
   const loadJobs = async () => {
     try {
-      // In a real app, backend would filter based on technicianId
-      // Since getMyBookings currently uses customerId, we would need a specific endpoint for technician bookings.
-      // For now, empty state.
+
+
+
       setJobs([]);
     } catch (error) {
       console.error(error);

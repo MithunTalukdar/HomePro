@@ -5,7 +5,7 @@ export interface ITechnicianProfile extends Document {
   bio: string;
   skills: string[];
   experienceYears: number;
-  serviceAreas: string[]; // e.g., zip codes or city names
+  serviceAreas: string[];
   availability: boolean;
   rating: number;
   totalRatings: number;

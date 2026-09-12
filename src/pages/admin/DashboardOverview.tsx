@@ -68,7 +68,7 @@ export function DashboardOverview() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
         
-        {/* Service Performance */}
+        
         <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', padding: '1.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Activity size={18} color="var(--primary)" /> Service Performance
@@ -96,7 +96,7 @@ export function DashboardOverview() {
           )}
         </div>
 
-        {/* Technician Performance Overview */}
+        
         <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', padding: '1.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Briefcase size={18} color="var(--primary)" /> Technician Workload

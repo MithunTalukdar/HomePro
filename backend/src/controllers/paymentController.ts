@@ -10,13 +10,13 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'secret_123',
 });
 
-// @route   POST /api/payments/create-order
+
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { amount, currency, receipt } = req.body;
 
     const options = {
-      amount: amount * 100, // Razorpay works in paise
+      amount: amount * 100,
       currency: currency || 'INR',
       receipt: receipt || `rcpt_${Date.now()}`
     };
@@ -28,7 +28,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
   }
 };
 
-// @route   POST /api/payments/verify
+
 export const verifyPayment = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId, amount } = req.body;
@@ -40,7 +40,7 @@ export const verifyPayment = async (req: AuthRequest, res: Response): Promise<vo
       .digest('hex');
 
     if (generated_signature === razorpay_signature) {
-      // Payment is successful
+
       const payment = await Payment.create({
         bookingId,
         userId: req.user!._id,
@@ -53,7 +53,7 @@ export const verifyPayment = async (req: AuthRequest, res: Response): Promise<vo
         status: 'SUCCESS'
       });
 
-      // Update Booking
+
       await Booking.findByIdAndUpdate(bookingId, { 
         $set: { paymentStatus: 'PAID' },
         $push: { statusHistory: { status: 'PAID', timestamp: new Date() } } 

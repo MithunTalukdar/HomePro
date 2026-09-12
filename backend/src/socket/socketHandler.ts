@@ -6,7 +6,7 @@ import { LocationTracking } from '../models/LocationTracking';
 import { Notification } from '../models/Notification';
 
 export const initializeSocket = (io: Server) => {
-  // Middleware for Authentication
+
   io.use(async (socket: Socket, next) => {
     try {
       const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
@@ -32,17 +32,17 @@ export const initializeSocket = (io: Server) => {
     const user = (socket as any).user;
     console.log(`User connected: ${user._id}`);
 
-    // Join personal room for generic notifications
+
     socket.join(user._id.toString());
 
-    // Join Booking Room (for Chat and Location Tracking)
+
     socket.on('join-booking', (bookingId: string) => {
-      // In a real app, verify if the user has access to this booking
+
       socket.join(`booking_${bookingId}`);
       console.log(`User ${user._id} joined booking room ${bookingId}`);
     });
 
-    // Chat Messaging
+
     socket.on('send-message', async (data: { bookingId: string, receiverId: string, text: string }) => {
       try {
         const message = await ChatMessage.create({
@@ -52,10 +52,10 @@ export const initializeSocket = (io: Server) => {
           text: data.text
         });
 
-        // Broadcast to booking room
+
         io.to(`booking_${data.bookingId}`).emit('new-message', message);
         
-        // Also send notification to receiver
+
         const notification = await Notification.create({
           user: data.receiverId,
           title: 'New Message',
@@ -70,7 +70,7 @@ export const initializeSocket = (io: Server) => {
       }
     });
 
-    // Technician Location Update
+
     socket.on('update-location', async (data: { bookingId: string, latitude: number, longitude: number }) => {
       if (user.role !== 'TECHNICIAN') return;
 
@@ -85,7 +85,7 @@ export const initializeSocket = (io: Server) => {
           { upsert: true, new: true }
         );
 
-        // Broadcast location only to the specific booking room
+
         io.to(`booking_${data.bookingId}`).emit('location-updated', {
           latitude: data.latitude,
           longitude: data.longitude
@@ -95,13 +95,13 @@ export const initializeSocket = (io: Server) => {
       }
     });
 
-    // Typing Indicators
+
     socket.on('typing', (data: { bookingId: string }) => {
       socket.to(`booking_${data.bookingId}`).emit('user-typing', { userId: user._id });
     });
 
-    // Booking Status Updates (Customer UI Update)
-    // Generally triggered by REST API via global Io instance, but can also be from socket
+
+
     socket.on('update-booking-status', (data: { bookingId: string, status: string }) => {
       io.to(`booking_${data.bookingId}`).emit('booking-status-changed', { status: data.status });
     });

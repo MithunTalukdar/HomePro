@@ -12,8 +12,8 @@ export function Invoices() {
 
   const loadInvoices = async () => {
     try {
-      // In a real app, we would have a specific /invoices endpoint.
-      // Here we can use completed bookings that have a payment.
+
+
       const data = await fetchApi('/bookings');
       const completed = data.filter((b: any) => b.status === 'COMPLETED' || b.paymentStatus === 'PAID');
       setBookings(completed);

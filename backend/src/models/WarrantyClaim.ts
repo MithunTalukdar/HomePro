@@ -5,7 +5,7 @@ export interface IWarrantyClaim extends Document {
   customerId: mongoose.Types.ObjectId;
   technicianId?: mongoose.Types.ObjectId;
   issueDescription: string;
-  status: string; // PENDING, APPROVED, REJECTED, RESOLVED
+  status: string;
   resolutionNotes?: string;
   createdAt: Date;
   updatedAt: Date;

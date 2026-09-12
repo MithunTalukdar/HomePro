@@ -8,7 +8,7 @@ export function Services() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  // Modal State
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
   const [formData, setFormData] = useState({

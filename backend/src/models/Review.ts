@@ -5,9 +5,9 @@ export interface IReview extends Document {
   customerId: mongoose.Types.ObjectId;
   technicianId?: mongoose.Types.ObjectId;
   serviceId?: string;
-  rating: number; // 1-5
+  rating: number;
   comment: string;
-  isApproved: boolean; // For admin moderation
+  isApproved: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

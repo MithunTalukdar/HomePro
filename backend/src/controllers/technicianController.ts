@@ -3,7 +3,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { TechnicianProfile } from '../models/TechnicianProfile';
 import { User } from '../models/User';
 
-// @route   POST /api/technicians/register
+
 export const registerTechnician = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, phone, password, bio, skills, experienceYears, serviceAreas, documents } = req.body;
@@ -37,7 +37,7 @@ export const registerTechnician = async (req: Request, res: Response): Promise<v
   }
 };
 
-// @route   GET /api/technicians/profile
+
 export const getTechnicianProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const profile = await TechnicianProfile.findOne({ user: req.user?._id }).populate('user', 'name email phone profileImage');

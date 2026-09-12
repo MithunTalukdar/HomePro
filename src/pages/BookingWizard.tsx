@@ -51,7 +51,7 @@ export function BookingWizard() {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Restore from session storage
+
   useEffect(() => {
     const savedData = sessionStorage.getItem(`booking_data_${service.id}`);
     const savedStep = sessionStorage.getItem(`booking_step_${service.id}`);
@@ -63,7 +63,7 @@ export function BookingWizard() {
     }
   }, [service.id]);
 
-  // Save to session storage
+
   useEffect(() => {
     sessionStorage.setItem(`booking_data_${service.id}`, JSON.stringify(data));
     sessionStorage.setItem(`booking_step_${service.id}`, currentStep.toString());
@@ -72,7 +72,7 @@ export function BookingWizard() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Coupon state
+
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponId, setCouponId] = useState<string | null>(null);
@@ -87,7 +87,7 @@ export function BookingWizard() {
   }, [currentStep]);
 
   const handleNext = async () => {
-    // Validation
+
     const newErrors: Record<string, string> = {};
     if (currentStep === 2 && !data.address.trim()) newErrors.address = 'Address is required';
     if (currentStep === 3 && !data.date) newErrors.date = 'Please select a date';
@@ -126,15 +126,15 @@ export function BookingWizard() {
         });
         
         if (data.paymentMethod === 'online') {
-          // 1. Create Order
+
           const order = await fetchApi('/payments/create-order', {
             method: 'POST',
             body: JSON.stringify({ amount: totalAmount, currency: 'INR', receipt: `rcpt_${booking._id}` })
           });
           
-          // 2. Open Razorpay
+
           const options = {
-            key: 'rzp_test_123', // Dummy key for UI testing, backend ignores it anyway in dev if we mock
+            key: 'rzp_test_123',
             amount: order.amount,
             currency: order.currency,
             name: 'ServeSync',
@@ -172,7 +172,7 @@ export function BookingWizard() {
           });
           rzp.open();
         } else {
-          // Cash payment
+
           sessionStorage.removeItem(`booking_data_${service.id}`);
           sessionStorage.removeItem(`booking_step_${service.id}`);
           navigate(`/booking-confirmation/${booking._id}`, { state: { booking: data, service } });
@@ -218,7 +218,7 @@ export function BookingWizard() {
     <main style={{ minHeight: '100vh', background: 'var(--background)', paddingTop: '2rem', paddingBottom: '4rem' }}>
       <div className="container" style={{ maxWidth: '1000px' }}>
         
-        {/* Progress Bar */}
+        
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '15px', left: 0, width: '100%', height: '2px', background: 'var(--border)', zIndex: 0 }}></div>
@@ -245,7 +245,7 @@ export function BookingWizard() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem' }}>
           
-          {/* Wizard Content */}
+          
           <div style={{ background: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', minHeight: '400px', position: 'relative' }}>
             <AnimatePresence mode="wait">
               <motion.div
@@ -255,7 +255,7 @@ export function BookingWizard() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* STEP 1: Select Service */}
+                
                 {currentStep === 1 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Confirm Service</h2>
@@ -270,7 +270,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 2: Address */}
+                
                 {currentStep === 2 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Where do you need the service?</h2>
@@ -291,7 +291,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 3: Date */}
+                
                 {currentStep === 3 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>When do you need the service?</h2>
@@ -322,7 +322,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 4: Time Slot */}
+                
                 {currentStep === 4 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Select a Time Slot</h2>
@@ -346,7 +346,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 5: Technician */}
+                
                 {currentStep === 5 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Select Professional</h2>
@@ -390,7 +390,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 6: Review */}
+                
                 {currentStep === 6 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Review Booking</h2>
@@ -426,7 +426,7 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                {/* STEP 7: Payment */}
+                
                 {currentStep === 7 && (
                   <div>
                     <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Payment Method</h2>
@@ -467,7 +467,7 @@ export function BookingWizard() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation Buttons */}
+            
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
               <button className="btn btn-outline" onClick={handleBack}>
                 <ChevronLeft size={20} /> Back
@@ -478,7 +478,7 @@ export function BookingWizard() {
             </div>
           </div>
 
-          {/* Booking Summary Panel */}
+          
           <div>
             <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', position: 'sticky', top: '100px' }}>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>Booking Summary</h3>
@@ -523,7 +523,7 @@ export function BookingWizard() {
                     <span style={{ fontWeight: 600 }}>₹{taxes}</span>
                   </div>
                   
-                  {/* Coupon UI */}
+                  
                   {currentStep >= 6 && (
                     <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>

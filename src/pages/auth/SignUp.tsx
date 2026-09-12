@@ -16,8 +16,11 @@ export function SignUp() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    navigate(`/auth/signup?type=${role}`, { replace: true });
-  }, [role, navigate]);
+    const currentType = searchParams.get('type') === 'technician' ? 'technician' : 'customer';
+    if (currentType !== role) {
+      navigate(`/auth/signup?type=${role}`, { replace: true });
+    }
+  }, [role, searchParams, navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +56,7 @@ export function SignUp() {
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', position: 'relative', overflow: 'hidden', padding: '2rem 1rem' }}>
       
-      {/* Premium Background Elements */}
+      
       <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       
@@ -82,7 +85,7 @@ export function SignUp() {
           overflow: 'hidden'
         }}>
           
-          {/* Top Tabs */}
+          
           <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
             <button 
               onClick={() => navigate(`/auth/login?type=${role}`)}
@@ -99,7 +102,7 @@ export function SignUp() {
 
           <div style={{ padding: '2.5rem' }}>
             
-            {/* Role Selector */}
+            
             <div style={{ marginBottom: '2rem' }}>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.75rem', fontWeight: 500 }}>Continue as</p>
               <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -108,7 +111,7 @@ export function SignUp() {
                   onClick={() => setRole('customer')}
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
-                    padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
+                    padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
                     background: role === 'customer' ? 'rgba(79, 70, 229, 0.2)' : 'transparent',
                     color: role === 'customer' ? '#fff' : 'var(--text-muted)',
                     border: role === 'customer' ? '1px solid rgba(79, 70, 229, 0.5)' : '1px solid transparent',
@@ -122,7 +125,7 @@ export function SignUp() {
                   onClick={() => setRole('technician')}
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
-                    padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
+                    padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
                     background: role === 'technician' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
                     color: role === 'technician' ? '#fff' : 'var(--text-muted)',
                     border: role === 'technician' ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid transparent',

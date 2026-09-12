@@ -21,12 +21,12 @@ async function findAndFixAdmin() {
     console.log('Connected to MongoDB');
 
     let admins = await User.find({ role: { $in: ['ADMIN', 'SUPER_ADMIN'] } });
-    
+
     if (admins.length > 0) {
       console.log(`Found ${admins.length} admin(s)`);
       for (const admin of admins) {
         console.log(`- ${admin.email} (Phone: ${admin.phone}, Role: ${admin.role})`);
-        // update password to admin123
+
         const salt = await bcrypt.genSalt(10);
         admin.passwordHash = await bcrypt.hash('admin123', salt);
         await admin.save();

@@ -19,7 +19,7 @@ export function BookingTracker() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load initial data
+
     const loadData = async () => {
       try {
         const profile = await fetchApi('/users/profile');
@@ -29,9 +29,9 @@ export function BookingTracker() {
         setBooking(bData);
         setStatus(bData.status);
         
-        // Load chat history if we have an endpoint, for now we will just load empty or mock
-        // const chatHistory = await fetchApi(`/chat/${id}`);
-        // setMessages(chatHistory);
+
+
+
       } catch (err) {
         console.error(err);
       }
@@ -71,7 +71,7 @@ export function BookingTracker() {
     e.preventDefault();
     if (!newMessage.trim() || !socket || !booking) return;
 
-    // Determine receiver (if customer, send to tech; if tech, send to customer)
+
     const receiverId = user?.role === 'CUSTOMER' ? booking.technicianId : booking.customerId;
 
     socket.emit('send-message', {
@@ -95,7 +95,7 @@ export function BookingTracker() {
     const baseLat = 28.7041;
     const baseLng = 77.1025;
     
-    // Simulate moving around by adding random small offsets
+
     const lat = baseLat + (Math.random() - 0.5) * 0.01;
     const lng = baseLng + (Math.random() - 0.5) * 0.01;
     
@@ -113,7 +113,7 @@ export function BookingTracker() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', height: 'calc(100vh - 140px)' }}>
       
-      {/* Main Tracking Area */}
+      
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto', paddingRight: '1rem' }}>
         
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -126,7 +126,7 @@ export function BookingTracker() {
           </div>
         </div>
 
-        {/* Live Status Timeline */}
+        
         <div style={{ background: 'var(--surface)', padding: '2rem', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '2rem' }}>Live Status</h2>
           
@@ -153,10 +153,10 @@ export function BookingTracker() {
           </div>
         </div>
 
-        {/* Conceptual Live Map */}
+        
         {(status === 'ON_THE_WAY' || status === 'IN_PROGRESS') && (
           <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', overflow: 'hidden', flex: 1, minHeight: '300px', position: 'relative' }}>
-            {/* Map Placeholder */}
+            
             <div style={{ width: '100%', height: '100%', background: '#e5e7eb', backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")', position: 'absolute', inset: 0 }}></div>
             
             <div style={{ position: 'absolute', top: '1rem', left: '1rem', background: 'white', padding: '1rem', borderRadius: 'var(--radius-md)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
@@ -168,7 +168,7 @@ export function BookingTracker() {
               </div>
             </div>
 
-            {/* Technician Marker */}
+            
             {techLocation && (
               <div style={{ 
                 position: 'absolute', 
@@ -182,7 +182,7 @@ export function BookingTracker() {
               }}></div>
             )}
             
-            {/* Customer Marker */}
+            
             <div style={{ 
               position: 'absolute', 
               top: '20%', left: '70%', 
@@ -206,7 +206,7 @@ export function BookingTracker() {
 
       </div>
 
-      {/* Chat Sidebar */}
+      
       <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <MessageCircle size={20} color="var(--primary)" />

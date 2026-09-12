@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { categories } from '../data';
 
-// Map icon names and accents to components
+
 const getCategoryStyle = (slug: string) => {
   switch(slug) {
     case 'electrical': return { icon: <Zap size={32} />, color: 'var(--accent-elec)' };
@@ -21,7 +21,7 @@ const getCategoryStyle = (slug: string) => {
 export function ServiceCategories() {
   return (
     <section className="section section-secondary relative" style={{ padding: '6rem 0', overflow: 'hidden' }}>
-      {/* Ambient background glow */}
+      
       <div className="ambient-glow-purple" style={{ top: '-10%', left: '-5%' }} />
       <div className="ambient-glow-cyan" style={{ bottom: '-10%', right: '-5%' }} />
 
@@ -97,7 +97,7 @@ export function ServiceCategories() {
                     {category.desc}
                   </p>
 
-                  {/* Subtle bottom border accent */}
+                  
                   <div style={{
                     position: 'absolute',
                     bottom: 0,

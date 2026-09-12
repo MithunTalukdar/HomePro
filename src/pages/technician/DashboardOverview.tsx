@@ -27,7 +27,7 @@ export function TechnicianDashboardOverview() {
   const stats = [
     { title: 'Completed Jobs', value: profile?.completedJobs || 0, icon: CheckCircle, color: 'var(--success)' },
     { title: 'Average Rating', value: profile?.rating || 0, icon: Star, color: 'var(--warning)' },
-    { title: 'Active Jobs', value: 0, icon: Briefcase, color: 'var(--primary)' }, // We'll compute this later
+    { title: 'Active Jobs', value: 0, icon: Briefcase, color: 'var(--primary)' },
     { title: 'Earnings (Month)', value: '$0', icon: DollarSign, color: 'var(--text)' },
   ];
 

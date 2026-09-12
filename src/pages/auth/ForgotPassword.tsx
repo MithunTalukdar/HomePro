@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { fetchApi } from '../../services/api';
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -9,25 +10,32 @@ export function ForgotPassword() {
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState('');
 
-  const handleReset = (e: React.FormEvent) => {
+  const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (!email) {
       setError('Please enter your email address');
       return;
     }
-    
+
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await fetchApi('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
       setIsSent(true);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset link. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', padding: '2rem 0' }}>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}
@@ -45,7 +53,7 @@ export function ForgotPassword() {
               </div>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Check your email</h3>
               <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.9rem' }}>
-                We sent a password reset link to <br/><strong>{email}</strong>
+                If an account with that email exists, we sent a password reset link to <br/><strong>{email}</strong>
               </p>
               <Link to="/auth/login" className="btn btn-primary w-full" style={{ justifyContent: 'center' }}>Return to Login</Link>
             </motion.div>
@@ -63,13 +71,14 @@ export function ForgotPassword() {
                   <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
                     <Mail size={18} />
                   </div>
-                  <input 
-                    type="email" 
-                    className="search-input" 
+                  <input
+                    type="email"
+                    className="search-input"
                     style={{ background: 'var(--background)', paddingLeft: '2.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', width: '100%' }}
                     placeholder="Enter your email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -80,7 +89,7 @@ export function ForgotPassword() {
             </form>
           )}
         </div>
-        
+
         {!isSent && (
           <div style={{ textAlign: 'center', marginTop: '2rem' }}>
             <Link to="/auth/login" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>

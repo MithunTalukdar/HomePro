@@ -1,6 +1,6 @@
 async function run() {
   try {
-    // 1. Register a test user
+
     let token = '';
     const email = `test_${Date.now()}@test.com`;
     try {
@@ -23,7 +23,7 @@ async function run() {
       return;
     }
 
-    // 2. Create booking
+
     try {
       const res = await fetch('http://127.0.0.1:5000/api/bookings', {
         method: 'POST',

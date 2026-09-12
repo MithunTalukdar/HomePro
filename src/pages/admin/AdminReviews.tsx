@@ -11,7 +11,7 @@ export function AdminReviews() {
   }, []);
 
   const loadReviews = async () => {
-    // In a real app we'd fetch all reviews from an admin endpoint
+
     setLoading(false);
   };
 

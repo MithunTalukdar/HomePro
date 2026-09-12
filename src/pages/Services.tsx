@@ -11,7 +11,7 @@ export function Services() {
   
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate network loading
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -32,7 +32,7 @@ export function Services() {
       if (sortBy === 'rating') {
         return b.rating - a.rating;
       }
-      return 0; // recommended
+      return 0;
     });
 
   return (

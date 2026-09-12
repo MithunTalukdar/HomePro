@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { Booking } from '../models/Booking';
 
-// @route   POST /api/bookings
+
 export const createBooking = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { serviceId, serviceName, date, timeSlot, address, price } = req.body;
@@ -25,7 +25,7 @@ export const createBooking = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-// @route   GET /api/bookings/my
+
 export const getMyBookings = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const bookings = await Booking.find({ customerId: req.user?._id }).sort({ createdAt: -1 });
@@ -35,7 +35,7 @@ export const getMyBookings = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-// @route   GET /api/bookings/:id
+
 export const getBookingById = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -53,7 +53,7 @@ export const getBookingById = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// @route   PUT /api/bookings/:id/status
+
 export const updateBookingStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { status, note } = req.body;
@@ -84,7 +84,7 @@ export const updateBookingStatus = async (req: AuthRequest, res: Response): Prom
   }
 };
 
-// @route   PUT /api/bookings/:id/report
+
 export const updateServiceReport = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { workDescription, notes, materialsUsed, beforeImages, afterImages } = req.body;

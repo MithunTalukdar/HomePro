@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 export function Footer() {
   return (
     <footer style={{ background: '#080D18', borderTop: '1px solid var(--border)', position: 'relative' }}>
-      {/* Top Accent Line */}
+      
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, transparent, var(--primary), var(--accent-electric), transparent)' }} />
       
       <div className="container" style={{ paddingTop: '5rem', paddingBottom: '2rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem', marginBottom: '4rem' }}>
-          <div style={{ gridColumn: '1 / -1', '@media (min-width: 768px)': { gridColumn: 'span 2' } } as any}>
+          <div className="footer-brand" style={{ gridColumn: '1 / -1' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
               <div style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent-electric))', padding: '0.5rem', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: 'var(--shadow-glow)' }}>
                 <Home size={22} strokeWidth={2.5} />
@@ -73,6 +73,7 @@ export function Footer() {
           &copy; {new Date().getFullYear()} HomePro. All rights reserved.
         </div>
       </div>
+      <style>{`@media (min-width: 768px) { .footer-brand { grid-column: span 2 !important; } }`}</style>
     </footer>
   );
 }

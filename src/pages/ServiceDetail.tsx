@@ -18,7 +18,7 @@ export function ServiceDetail() {
   const category = categories.find(c => c.slug === categorySlug);
 
   useEffect(() => {
-    // Redirect if invalid url params
+
     if (!service) {
       if (category) {
         navigate(`/services/${category.slug}`, { replace: true });
@@ -42,7 +42,7 @@ export function ServiceDetail() {
         keywords={`${service.name.toLowerCase()}, ${category.name.toLowerCase()}, home service, repair`} 
       />
 
-      {/* Breadcrumbs */}
+      
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 10, padding: '1.5rem 0', background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>
           <Link to="/" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Home</Link>
@@ -55,7 +55,7 @@ export function ServiceDetail() {
         </div>
       </div>
 
-      {/* Hero */}
+      
       <div style={{ position: 'relative', height: '450px', width: '100%' }}>
         <img src={service.image} alt={service.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--background) 0%, rgba(15, 23, 42, 0.4) 100%)' }}></div>
@@ -73,7 +73,7 @@ export function ServiceDetail() {
 
       <div className="container" style={{ paddingTop: '3rem', display: 'grid', gridTemplateColumns: '1fr', gap: '3rem' }}>
         
-        {/* Description & Details */}
+        
         <section>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>About this service</h2>
           <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '1.1rem' }}>{service.description}</p>
@@ -114,23 +114,23 @@ export function ServiceDetail() {
           </div>
         </section>
 
-        {/* Technician Preview */}
+        
         <div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Professionals for this service</h2>
           <TechnicianShowcase />
         </div>
 
-        {/* Reviews */}
+        
         <div style={{ marginTop: '-4rem' }}>
           <Testimonials />
         </div>
 
-        {/* FAQs */}
+        
         <div style={{ marginTop: '-4rem' }}>
           <FAQ />
         </div>
 
-        {/* Related Services */}
+        
         {relatedServices.length > 0 && (
           <section style={{ marginBottom: '4rem' }}>
             <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Related Services</h2>
@@ -150,7 +150,7 @@ export function ServiceDetail() {
         )}
       </div>
 
-      {/* Sticky Bottom CTA */}
+      
       <div style={{ 
         position: 'fixed', bottom: 0, left: 0, width: '100%', 
         background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)', 

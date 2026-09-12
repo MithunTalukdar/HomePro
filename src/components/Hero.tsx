@@ -67,7 +67,7 @@ export function Hero() {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Auto-advance slider for images
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % servicesHero.length);
@@ -101,7 +101,7 @@ export function Hero() {
 
   return (
     <section className="hero" style={{ padding: 0, minHeight: '85vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Background Images */}
+      
       {servicesHero.map((slide, index) => (
         <div 
           key={slide.id}
@@ -123,7 +123,7 @@ export function Hero() {
               objectFit: 'cover'
             }}
           />
-          {/* Cinematic Dark Overlay */}
+          
           <div style={{
             position: 'absolute',
             inset: 0,
@@ -141,7 +141,7 @@ export function Hero() {
 
       <div className="container" style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8rem 1rem 6rem' }}>
         
-        {/* Main Content Area */}
+        
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -203,7 +203,7 @@ export function Hero() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Existing Search Functionality */}
+        
         <motion.div 
           className="search-container glass"
           initial={{ opacity: 0, y: 20 }}
@@ -223,7 +223,7 @@ export function Hero() {
           <button className="btn btn-primary search-btn">Book Now</button>
         </motion.div>
 
-        {/* Badges */}
+        
         <motion.div 
           style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '3rem', flexWrap: 'wrap' }}
           initial={{ opacity: 0 }}
@@ -242,7 +242,7 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Slider Controls */}
+      
       <button 
         onClick={prevSlide}
         style={{
@@ -275,7 +275,7 @@ export function Hero() {
         <ChevronRight size={24} />
       </button>
 
-      {/* Pagination Dots */}
+      
       <div style={{
         position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
         zIndex: 20, display: 'flex', gap: '0.75rem',

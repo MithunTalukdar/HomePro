@@ -5,7 +5,7 @@ export class MockAIProvider implements IAIService {
   async analyzeRequest(message: string): Promise<AIResponse> {
     const text = message.toLowerCase();
 
-    // Safety checks
+
     if (text.includes('diy') || text.includes('how to fix') || text.includes('open the panel') || text.includes('bare wires')) {
       return {
         recommendedCategory: null,
@@ -14,7 +14,7 @@ export class MockAIProvider implements IAIService {
       };
     }
 
-    // Category matching heuristics
+
     if (text.includes('fan')) {
       return {
         recommendedCategory: 'Fan Repair & Installation',
@@ -39,7 +39,7 @@ export class MockAIProvider implements IAIService {
       };
     }
 
-    // Generic response
+
     return {
       recommendedCategory: 'General Assessment',
       suggestedResponse: 'I can help you find a professional for that. Would you like to browse our services or find an electrician nearby?',

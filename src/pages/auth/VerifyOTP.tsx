@@ -20,7 +20,7 @@ export function VerifyOTP() {
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // Auto focus next input
+
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }

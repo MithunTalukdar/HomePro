@@ -3,7 +3,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { User, IAddress } from '../models/User';
 import bcrypt from 'bcryptjs';
 
-// @route   GET /api/users/profile
+
 export const getUserProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id).select('-passwordHash');
@@ -17,7 +17,7 @@ export const getUserProfile = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// @route   PUT /api/users/profile
+
 export const updateUserProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);
@@ -43,7 +43,7 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-// @route   PUT /api/users/password
+
 export const changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);
@@ -61,7 +61,7 @@ export const changePassword = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// @route   GET /api/users/addresses
+
 export const getAddresses = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);
@@ -75,7 +75,7 @@ export const getAddresses = async (req: AuthRequest, res: Response): Promise<voi
   }
 };
 
-// @route   POST /api/users/addresses
+
 export const addAddress = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.user?._id);

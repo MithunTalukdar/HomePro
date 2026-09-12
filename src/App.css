@@ -6,7 +6,7 @@
   width: 100%;
 }
 
-/* Header */
+
 .header {
   position: sticky;
   top: 0;
@@ -83,7 +83,19 @@
     display: none;
   }
   .mobile-menu-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    cursor: pointer;
+  }
+  .logo span {
+    font-size: 1.5rem !important;
+  }
+}
+@media (max-width: 400px) {
+  .logo span {
+    font-size: 1.25rem !important;
   }
 }
 .mobile-menu {
@@ -100,7 +112,7 @@
   z-index: 49;
 }
 
-/* Hero Section */
+
 .hero {
   padding: 8rem 0 6rem;
   text-align: center;
@@ -139,7 +151,7 @@
   margin: 0 auto 3rem;
 }
 
-/* Search Bar */
+
 .search-container {
   width: 100%;
   max-width: 800px;
@@ -171,12 +183,32 @@
 }
 .search-input {
   background: transparent;
-  border: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-main);
   width: 100%;
-  padding: 0.75rem 0;
+  padding: 0.75rem 1rem;
   outline: none;
   font-size: 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 93, 251, 0.2);
+}
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-input-group .search-input {
+  border: none;
+  padding: 0.75rem 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.search-input-group .search-input:focus {
+  border: none;
+  box-shadow: none;
 }
 .search-divider {
   width: 1px;
@@ -184,7 +216,7 @@
   margin: 0.5rem 0;
 }
 
-/* Sections */
+
 .section {
   padding: 6rem 0;
 }
@@ -204,7 +236,7 @@
   margin: 0 auto;
 }
 
-/* Service Categories */
+
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -250,7 +282,7 @@
   color: var(--text-muted);
 }
 
-/* Popular Services */
+
 .popular-services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -313,7 +345,7 @@
   gap: 0.25rem;
 }
 
-/* Tech Showcase - Advanced */
+
 .tech-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -414,7 +446,7 @@
   border: 1px solid var(--border);
 }
 
-/* Timeline / How It Works */
+
 .timeline-container {
   max-width: 800px;
   margin: 0 auto;
@@ -460,7 +492,7 @@
   z-index: 0;
 }
 
-/* Testimonials */
+
 .testimonials-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -490,7 +522,7 @@
   line-height: 1.6;
 }
 
-/* Trust Section & Stats */
+
 .trust-section {
   background: var(--surface);
   border-top: 1px solid var(--border);
@@ -514,7 +546,7 @@
   font-weight: 500;
 }
 
-/* AI Assistant */
+
 .ai-section {
   background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.05));
   border-radius: var(--radius-lg);
@@ -575,7 +607,7 @@
   align-items: center;
 }
 
-/* FAQ */
+
 .faq-container {
   max-width: 800px;
   margin: 0 auto;
@@ -602,7 +634,7 @@
   line-height: 1.6;
 }
 
-/* Footer */
+
 .footer {
   background: var(--background);
   padding: 4rem 0 2rem;

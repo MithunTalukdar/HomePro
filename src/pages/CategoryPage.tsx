@@ -66,7 +66,7 @@ export function CategoryPage() {
         keywords={`${category.name.toLowerCase()}, home service, repair, installation`} 
       />
 
-      {/* Breadcrumbs */}
+      
       <div style={{ padding: '1.5rem 0', borderBottom: '1px solid var(--border)' }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           <Link to="/" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Home</Link>
@@ -77,7 +77,7 @@ export function CategoryPage() {
         </div>
       </div>
 
-      {/* Hero Section */}
+      
       <section style={{ position: 'relative', padding: '6rem 0', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1,
@@ -132,7 +132,7 @@ export function CategoryPage() {
         </div>
       </section>
 
-      {/* Services Listing */}
+      
       <section className="section bg-slate-900">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
@@ -217,7 +217,7 @@ export function CategoryPage() {
         </div>
       </section>
 
-      {/* Trust Section */}
+      
       <section className="section" style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'center' }}>

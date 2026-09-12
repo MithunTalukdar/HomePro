@@ -20,7 +20,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Event target to trigger global logout from outside React components (e.g., api.ts)
+
 export const authEventTarget = new EventTarget();
 
 export function AuthProvider({ children }: { children: ReactNode }) {

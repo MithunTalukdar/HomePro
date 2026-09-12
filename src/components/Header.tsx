@@ -14,7 +14,7 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Add scroll listener for dynamic glass effect
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -85,15 +85,15 @@ export function Header() {
             }}>
               <Home size={22} strokeWidth={2.5} />
             </div>
-            <span style={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.5px', color: '#fff' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.5px', color: '#fff', whiteSpace: 'nowrap' }}>
               Home<span style={{ color: 'var(--primary-light)' }}>Pro</span>
             </span>
           </Link>
           
-          <nav className="nav-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <nav className="nav-links" style={{ alignItems: 'center' }}>
             {links.map((link) => {
               const isActive = location.pathname === link.path || (location.pathname === '/' && link.path === '/');
-              // Basic check, might need refine for hash links
+
               
               return (
                 <a 
@@ -137,7 +137,7 @@ export function Header() {
             })}
           </nav>
           
-          <div className="auth-buttons" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="auth-buttons" style={{ alignItems: 'center' }}>
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <Link 
@@ -161,8 +161,8 @@ export function Header() {
             )}
           </div>
           
-          <button className="mobile-menu-btn" style={{ display: 'none' }} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X size={24} color="white" /> : <Menu size={24} color="white" />}
+          <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X size={28} color="white" /> : <Menu size={28} color="white" />}
           </button>
         </div>
 

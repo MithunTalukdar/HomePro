@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { MockAIProvider } from '../services/MockAIProvider';
 
-// We can inject different providers here in the future
+
 const aiService = new MockAIProvider();
 
 export const handleAIRequest = async (req: Request, res: Response) => {

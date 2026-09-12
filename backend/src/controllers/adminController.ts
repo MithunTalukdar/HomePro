@@ -7,7 +7,7 @@ import { Service } from '../models/Service';
 import { AuditLog } from '../models/AuditLog';
 import { logAdminAction } from '../utils/auditLogger';
 
-// @route   GET /api/admin/stats
+
 export const getStats = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const totalUsers = await User.countDocuments({ role: 'CUSTOMER' });
@@ -45,7 +45,7 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
       }
     });
 
-    // Service performance
+
     const servicePerformanceAgg = await Booking.aggregate([
       { $group: { _id: '$serviceName', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -53,10 +53,10 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     ]);
     const servicePerformance = servicePerformanceAgg.map(s => ({ name: s._id, count: s.count }));
 
-    // Technician performance (just general stats for now)
+
     const activeJobs = await Booking.countDocuments({ status: { $in: ['ON_THE_WAY', 'ARRIVED', 'IN_PROGRESS'] } });
     const technicianPerformance = {
-      totalAssigned: pendingBookings + activeJobs, // Approximation
+      totalAssigned: pendingBookings + activeJobs,
       activeJobs,
       completedJobs: completedBookings,
       pendingJobs: pendingBookings
@@ -86,12 +86,12 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
   }
 };
 
-// @route   GET /api/admin/users
+
 export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const users = await User.find({ role: 'CUSTOMER' }).select('-passwordHash').sort({ createdAt: -1 });
     
-    // Get booking counts for all users
+
     const usersWithBookings = await Promise.all(
       users.map(async (user) => {
         const totalBookings = await Booking.countDocuments({ customerId: user._id });
@@ -108,7 +108,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void
   }
 };
 
-// @route   PUT /api/admin/users/:id/status
+
 export const updateUserStatus = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id);
@@ -116,9 +116,9 @@ export const updateUserStatus = async (req: AuthRequest, res: Response): Promise
       res.status(404).json({ message: 'User not found' });
       return;
     }
-    // Assuming we add isActive to User model, or we just mock it for now
-    // user.isActive = req.body.isActive;
-    // await user.save();
+
+
+
     
     await logAdminAction(req.user!._id, req.user!.name, 'UPDATE_USER_STATUS', user._id, 'User', `Status changed to ${req.body.isActive}`);
     res.json({ message: 'User status updated successfully' });
@@ -127,7 +127,7 @@ export const updateUserStatus = async (req: AuthRequest, res: Response): Promise
   }
 };
 
-// @route   GET /api/admin/technicians
+
 export const getAllTechnicians = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const technicians = await User.find({ role: 'TECHNICIAN' }).select('-passwordHash').sort({ createdAt: -1 });
@@ -155,7 +155,7 @@ export const getAllTechnicians = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-// @route   PUT /api/admin/technicians/:id/approve
+
 export const approveTechnician = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const profile = await TechnicianProfile.findOne({ userId: req.params.id });
@@ -164,7 +164,7 @@ export const approveTechnician = async (req: AuthRequest, res: Response): Promis
       return;
     }
     
-    profile.verificationStatus = req.body.status; // 'VERIFIED', 'REJECTED', 'SUSPENDED'
+    profile.verificationStatus = req.body.status;
     await profile.save();
     
     await logAdminAction(req.user!._id, req.user!.name, 'APPROVE_TECHNICIAN', profile._id, 'TechnicianProfile', `Status changed to ${req.body.status}`);
@@ -174,7 +174,7 @@ export const approveTechnician = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-// @route   GET /api/admin/bookings
+
 export const getAllBookings = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
@@ -184,7 +184,7 @@ export const getAllBookings = async (req: AuthRequest, res: Response): Promise<v
   }
 };
 
-// @route   GET /api/admin/audit-logs
+
 export const getAuditLogs = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const logs = await AuditLog.find().sort({ createdAt: -1 }).limit(100);
@@ -194,7 +194,7 @@ export const getAuditLogs = async (req: AuthRequest, res: Response): Promise<voi
   }
 };
 
-// @route   POST /api/admin/services
+
 export const addService = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { title, description, category, startingPrice, estimatedDuration, image, inclusions, exclusions, isActive } = req.body;
@@ -216,7 +216,7 @@ export const addService = async (req: AuthRequest, res: Response): Promise<void>
   }
 };
 
-// @route   PUT /api/admin/services/:id
+
 export const updateService = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const service = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -231,7 +231,7 @@ export const updateService = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-// @route   DELETE /api/admin/services/:id
+
 export const deleteService = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const service = await Service.findByIdAndDelete(req.params.id);

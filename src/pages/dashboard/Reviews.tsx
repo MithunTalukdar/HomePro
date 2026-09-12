@@ -16,7 +16,7 @@ export function Reviews() {
   const loadBookings = async () => {
     try {
       const data = await fetchApi('/bookings');
-      // Only show completed bookings
+
       setBookings(data.filter((b: any) => b.status === 'COMPLETED'));
     } catch (error) {
       console.error(error);
@@ -37,7 +37,7 @@ export function Reviews() {
       });
       alert('Review submitted successfully!');
       setReviewModal(null);
-      // In a real app, update the booking to indicate it's been reviewed.
+
     } catch (error: any) {
       alert(error.message);
     }
@@ -79,7 +79,7 @@ export function Reviews() {
         )}
       </div>
 
-      {/* Review Modal */}
+      
       {reviewModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div style={{ background: 'var(--surface)', width: '100%', maxWidth: '500px', borderRadius: 'var(--radius-xl)', padding: '2rem' }}>

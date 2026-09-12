@@ -68,7 +68,7 @@ export function DashboardLayout() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--background)' }}>
       
-      {/* Desktop Sidebar */}
+      
       <aside style={{ width: '280px', background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', position: 'fixed', height: '100vh', left: 0, top: 0, zIndex: 50 }} className="desktop-sidebar">
         <div style={{ padding: '2rem' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: 'var(--text-main)', marginBottom: '3rem' }}>
@@ -107,10 +107,10 @@ export function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      
       <div className="dashboard-content" style={{ flex: 1, paddingLeft: '280px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         
-        {/* Top Header */}
+        
         <header style={{ height: '80px', borderBottom: '1px solid var(--border)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', position: 'sticky', top: 0, zIndex: 40 }}>
           
           <div className="mobile-only" style={{ display: 'none' }}>
@@ -121,7 +121,7 @@ export function DashboardLayout() {
           
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '2rem' }}>
             
-            {/* Notification Bell */}
+            
             <div style={{ position: 'relative' }}>
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -133,7 +133,7 @@ export function DashboardLayout() {
                 )}
               </button>
               
-              {/* Notifications Dropdown */}
+              
               <AnimatePresence>
                 {showNotifications && (
                   <motion.div
@@ -161,7 +161,7 @@ export function DashboardLayout() {
               </AnimatePresence>
             </div>
 
-            {/* User Profile Info */}
+            
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div className="desktop-only" style={{ textAlign: 'right' }}>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.name}</div>
@@ -173,13 +173,13 @@ export function DashboardLayout() {
           </div>
         </header>
 
-        {/* Dashboard Pages Outlet */}
+        
         <div style={{ padding: '2rem', flex: 1, overflowY: 'auto' }}>
           <Outlet />
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>

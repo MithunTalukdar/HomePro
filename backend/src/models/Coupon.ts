@@ -2,11 +2,11 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ICoupon extends Document {
   code: string;
-  discountType: string; // PERCENTAGE, FIXED
+  discountType: string;
   discountValue: number;
   minimumOrderValue: number;
   expiryDate: Date;
-  usageLimit: number; // Total times it can be used globally
+  usageLimit: number;
   usedCount: number;
   perUserLimit: number;
   isActive: boolean;

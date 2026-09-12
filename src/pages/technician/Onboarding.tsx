@@ -55,7 +55,7 @@ export function Onboarding() {
         body: JSON.stringify(payload)
       });
       
-      // Auto-login logic can be added here or redirect to a success page
+
       alert('Registration successful! Please login.');
       navigate('/auth/login');
     } catch (error: any) {

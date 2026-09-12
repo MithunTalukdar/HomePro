@@ -29,9 +29,9 @@ export function AIAssistant() {
     setIsLoading(true);
 
     try {
-      // If we are not logged in, we can't use the protected route. 
-      // For the demo, we assume the user is logged in if they are using the AI in the dashboard.
-      // We will handle public queries gracefully if token is missing.
+
+
+
       const token = localStorage.getItem('token');
       if (!token) {
         setTimeout(() => {
@@ -61,13 +61,13 @@ export function AIAssistant() {
 
   const handleAction = (category: string) => {
     setIsOpen(false);
-    // In a real app, this would query the DB for the exact service ID matching the category
+
     navigate('/services');
   };
 
   return (
     <>
-      {/* Floating Button */}
+      
       <button
         onClick={() => setIsOpen(true)}
         style={{
@@ -81,7 +81,7 @@ export function AIAssistant() {
         <Bot size={32} />
       </button>
 
-      {/* Chat Window */}
+      
       {isOpen && (
         <div style={{
           position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 50,
@@ -89,7 +89,7 @@ export function AIAssistant() {
           borderRadius: 'var(--radius-xl)', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
           display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid var(--border)'
         }}>
-          {/* Header */}
+          
           <div style={{ padding: '1rem', background: 'var(--primary)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
               <Bot size={20} /> AI Assistant
@@ -99,7 +99,7 @@ export function AIAssistant() {
             </button>
           </div>
 
-          {/* Messages */}
+          
           <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', background: 'var(--background)' }}>
             {messages.map((msg, idx) => (
               <div key={idx} style={{ alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
@@ -143,7 +143,7 @@ export function AIAssistant() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
+          
           <div style={{ padding: '1rem', borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
             <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
               <input

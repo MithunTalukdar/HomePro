@@ -91,8 +91,8 @@ export function TechnicianDashboardLayout() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--background)', display: 'flex' }}>
 
-      {/* Desktop Sidebar */}
-      <aside style={{ width: '280px', background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'none', flexDirection: 'column', '@media (min-width: 1024px)': { display: 'flex' } } as React.CSSProperties}>
+      
+      <aside className="tech-desktop-sidebar" style={{ width: '280px', background: 'var(--surface)', borderRight: '1px solid var(--border)', display: 'none', flexDirection: 'column' } as React.CSSProperties}>
         <div style={{ padding: '2rem' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '1.25rem' }}>
@@ -122,9 +122,9 @@ export function TechnicianDashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Top Header */}
+        
         <header style={{ height: '80px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="mobile-menu-btn" style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', display: 'none' }} onClick={() => setIsMobileMenuOpen(true)}>
@@ -139,7 +139,7 @@ export function TechnicianDashboardLayout() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingLeft: '1.5rem', borderLeft: '1px solid var(--border)' }}>
-              <div style={{ textAlign: 'right', display: 'none', '@media (min-width: 768px)': { display: 'block' } } as any}>
+              <div className="tech-user-info" style={{ textAlign: 'right', display: 'none' }}>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.name}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Technician</div>
               </div>
@@ -148,11 +148,15 @@ export function TechnicianDashboardLayout() {
           </div>
         </header>
 
-        {/* Page Content */}
+        
         <div style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
           <Outlet />
         </div>
       </main>
+      <style>{`
+        @media (min-width: 1024px) { .tech-desktop-sidebar { display: flex !important; } }
+        @media (min-width: 768px) { .tech-user-info { display: block !important; } }
+      `}</style>
     </div>
   );
 }

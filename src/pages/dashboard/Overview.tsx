@@ -17,7 +17,7 @@ export function Overview() {
     try {
       const data = await fetchApi('/bookings/my');
       
-      // Separate active and recent
+
       const active = data.find((b: any) => !['COMPLETED', 'CANCELLED'].includes(b.status));
       const recent = data.filter((b: any) => ['COMPLETED', 'CANCELLED'].includes(b.status));
 
@@ -45,7 +45,7 @@ export function Overview() {
       <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem', fontWeight: 800 }}>Dashboard Overview</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Track your active services and manage your account.</p>
 
-      {/* Active Booking Tracker */}
+      
       {activeBooking && (
         <section style={{ marginBottom: '3.5rem' }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', fontWeight: 700 }}>Active Booking</h2>
@@ -72,7 +72,7 @@ export function Overview() {
         </section>
       )}
 
-      {/* Recent Activity */}
+      
       <section>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Recent Bookings</h2>

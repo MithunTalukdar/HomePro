@@ -51,7 +51,7 @@ export function Bookings() {
       <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Booking History</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>View and manage all your service bookings.</p>
 
-      {/* Tabs */}
+      
       <div style={{ display: 'flex', gap: '2rem', borderBottom: '1px solid var(--border)', marginBottom: '2rem' }}>
         <button 
           onClick={() => setActiveTab('upcoming')}

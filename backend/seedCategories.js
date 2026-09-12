@@ -37,8 +37,8 @@ const seedDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/homepro');
     console.log('MongoDB Connected');
-    
-    // Create categories if they don't exist
+
+
     for (const catName of categoriesToSeed) {
       const existing = await ServiceCategory.findOne({ name: catName });
       if (!existing) {
@@ -49,7 +49,7 @@ const seedDB = async () => {
         console.log(`Seeded: ${catName}`);
       }
     }
-    
+
     console.log('Seeding completed!');
     process.exit(0);
   } catch (error) {

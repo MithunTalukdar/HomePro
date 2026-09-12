@@ -31,7 +31,7 @@ export function AdminLayout() {
     }
     const user = JSON.parse(userStr);
     if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
-      navigate('/dashboard/overview'); // Redirect if not admin
+      navigate('/dashboard/overview');
       return;
     }
     setAdmin(user);
@@ -60,12 +60,12 @@ export function AdminLayout() {
     { name: 'Settings', path: '/admin/dashboard/settings', icon: Settings },
   ];
 
-  if (!admin) return null; // Avoid flicker
+  if (!admin) return null;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--background)' }}>
       
-      {/* Mobile Menu Overlay */}
+      
       {isMobileMenuOpen && (
         <div 
           onClick={() => setIsMobileMenuOpen(false)}
@@ -73,7 +73,7 @@ export function AdminLayout() {
         />
       )}
 
-      {/* Sidebar */}
+      
       <aside style={{ 
         position: 'fixed',
         top: 0,
@@ -145,9 +145,9 @@ export function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      
       <main style={{ flex: 1, marginLeft: 0, display: 'flex', flexDirection: 'column' }} className="admin-main">
-        {/* Top Header */}
+        
         <header style={{ height: '80px', background: 'var(--surface)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', position: 'sticky', top: 0, zIndex: 30 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button 
@@ -171,7 +171,7 @@ export function AdminLayout() {
           </div>
         </header>
 
-        {/* Page Content */}
+        
         <div style={{ padding: '2rem', flex: 1, overflowY: 'auto' }}>
           <motion.div
             key={location.pathname}

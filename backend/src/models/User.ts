@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 export interface IAddress {
   label: string;
@@ -18,7 +19,10 @@ export interface IUser extends Document {
   profileImage?: string;
   isVerified: boolean;
   addresses: IAddress[];
+  resetPasswordToken?: string;
+  resetPasswordExpire?: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
+  getResetPasswordToken(): string;
 }
 
 const addressSchema = new Schema<IAddress>({
@@ -39,6 +43,8 @@ const userSchema = new Schema<IUser>(
     profileImage: { type: String },
     isVerified: { type: Boolean, default: false },
     addresses: [addressSchema],
+    resetPasswordToken: { type: String },
+    resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
 );
@@ -47,9 +53,19 @@ userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.passwordHash);
 };
 
-userSchema.pre('save', async function (next) {
+userSchema.methods.getResetPasswordToken = function (): string {
+
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  this.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
+  return resetToken;
+};
+
+userSchema.pre('save', async function () {
   if (!this.isModified('passwordHash')) {
-    next();
+    return;
   }
   const salt = await bcrypt.genSalt(10);
   this.passwordHash = await bcrypt.hash(this.passwordHash, salt);

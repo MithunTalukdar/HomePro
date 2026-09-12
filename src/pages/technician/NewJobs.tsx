@@ -10,17 +10,17 @@ export function NewJobs() {
     loadNewJobs();
   }, []);
 
-  // For demo, we are just fetching all requested bookings
-  // In a real app, this would be an endpoint like /bookings/available matching technician's skills
+
+
   const loadNewJobs = async () => {
     try {
-      // Assuming a GET /bookings/available exists or we fetch and filter (admin logic)
-      // Since we don't have a specific available endpoint, we'll simulate by fetching customer bookings if admin, 
-      // but actually let's add a quick mock or we can just show empty state for now until backend is fully robust.
-      // Let's implement a simple fetch from a custom endpoint we can add or just use empty state.
-      // Actually we didn't create /bookings/available on backend.
-      // Let's just fetch all bookings for now and filter REQUESTED on frontend for demo purposes if we are admin, but technicians can't fetch all bookings.
-      // Let's create an empty state.
+
+
+
+
+
+
+
       setJobs([]); 
     } catch (error) {
       console.error(error);

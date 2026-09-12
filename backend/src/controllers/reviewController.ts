@@ -4,7 +4,7 @@ import { Review } from '../models/Review';
 import { Booking } from '../models/Booking';
 import { TechnicianProfile } from '../models/TechnicianProfile';
 
-// @route   POST /api/reviews
+
 export const createReview = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { bookingId, rating, comment } = req.body;
@@ -40,7 +40,7 @@ export const createReview = async (req: AuthRequest, res: Response): Promise<voi
       comment
     });
 
-    // Update technician average rating
+
     if (booking.technicianId) {
       const allReviews = await Review.find({ technicianId: booking.technicianId });
       const avgRating = allReviews.reduce((acc, item) => acc + item.rating, 0) / allReviews.length;
@@ -57,7 +57,7 @@ export const createReview = async (req: AuthRequest, res: Response): Promise<voi
   }
 };
 
-// @route   GET /api/reviews/technician/:id
+
 export const getTechnicianReviews = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const reviews = await Review.find({ technicianId: req.params.id, isApproved: true })

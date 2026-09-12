@@ -28,7 +28,7 @@ export const validateCoupon = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
     
-    // In a real app, also check perUserLimit against a user-coupon usage collection
+
     
     let discountAmount = 0;
     if (coupon.discountType === 'PERCENTAGE') {

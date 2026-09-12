@@ -75,7 +75,7 @@ export interface Category {
   slug: string;
   name: string;
   icon: string;
-  desc: string; // shortDescription
+  desc: string;
   longDescription: string;
   image: string;
 }
@@ -109,7 +109,7 @@ export interface DetailedService {
   faqs: { q: string; a: string }[];
 }
 
-// Generate the services dynamically to save space, but with full details
+
 const generateServices = (): DetailedService[] => {
   const result: DetailedService[] = [];
   let idCounter = 1;
@@ -117,7 +117,7 @@ const generateServices = (): DetailedService[] => {
   const pushService = (catId: string, catSlug: string, name: string, price: string, duration: string, defaultImage: string, desc: string) => {
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     
-    // Ensure every service has a unique, explicit image path mapping
+
     const uniqueImagePath = `/images/services/${slug}.jpg`;
     
     result.push({
@@ -128,7 +128,7 @@ const generateServices = (): DetailedService[] => {
       name,
       price,
       duration,
-      rating: 4.8 + (Math.random() * 0.2), // Random rating between 4.8 and 5.0
+      rating: 4.8 + (Math.random() * 0.2),
       reviews: Math.floor(Math.random() * 500) + 50,
       image: uniqueImagePath,
       description: desc,
@@ -139,35 +139,35 @@ const generateServices = (): DetailedService[] => {
     });
   };
 
-  // ELECTRICAL SERVICES
+
   const electricalServices = ['Fan Repair', 'Ceiling Fan Installation', 'Switch and Socket Repair', 'Electrical Wiring', 'MCB Repair', 'Electrical Inspection', 'Light Installation', 'Power Failure Repair', 'Inverter Installation', 'Doorbell Installation'];
   electricalServices.forEach(s => pushService('c1', 'electrical', s, '₹' + (Math.floor(Math.random() * 500) + 149), '45 mins', 'placeholder', `Professional ${s} by verified experts.`));
 
-  // AC SERVICES
+
   const acServices = ['AC General Service', 'AC Deep Cleaning', 'AC Repair', 'AC Installation', 'AC Uninstallation', 'AC Gas Refill', 'AC Water Leakage Repair', 'AC Cooling Problem Repair', 'AC Annual Maintenance'];
   acServices.forEach(s => pushService('c2', 'ac-service', s, '₹' + (Math.floor(Math.random() * 1000) + 499), '1 hr', 'placeholder', `Top rated ${s} to ensure efficient cooling.`));
 
-  // PLUMBING SERVICES
+
   const plumbingServices = ['Tap Repair', 'Pipe Leakage Repair', 'Drain Cleaning', 'Bathroom Fitting', 'Toilet Repair', 'Water Tank Cleaning', 'Sink Repair', 'Shower Installation', 'Water Pipeline Installation'];
   plumbingServices.forEach(s => pushService('c3', 'plumbing', s, '₹' + (Math.floor(Math.random() * 400) + 149), '1 hr', 'placeholder', `Reliable ${s} to fix all your plumbing issues.`));
 
-  // APPLIANCE REPAIR SERVICES
+
   const applianceServices = ['Washing Machine Repair', 'Refrigerator Repair', 'Microwave Repair', 'Geyser Repair', 'Chimney Repair', 'Water Heater Repair', 'Dishwasher Repair'];
   applianceServices.forEach(s => pushService('c4', 'appliance-repair', s, '₹' + (Math.floor(Math.random() * 500) + 299), '1.5 hrs', 'placeholder', `Expert ${s} right at your doorstep.`));
 
-  // CCTV SERVICES
+
   const cctvServices = ['CCTV Installation', 'CCTV Camera Repair', 'CCTV Maintenance', 'DVR / NVR Setup', 'CCTV System Inspection', 'Home Security Setup'];
   cctvServices.forEach(s => pushService('c5', 'cctv', s, '₹' + (Math.floor(Math.random() * 1000) + 499), '2 hrs', 'placeholder', `Secure your premises with our ${s}.`));
 
-  // RO / WATER SERVICES
+
   const roServices = ['RO Installation', 'RO Repair', 'RO Filter Replacement', 'Water Purifier Service', 'Water Purifier Maintenance', 'Water Quality Check'];
   roServices.forEach(s => pushService('c6', 'ro-water', s, '₹' + (Math.floor(Math.random() * 300) + 199), '45 mins', 'placeholder', `Ensure clean drinking water with ${s}.`));
 
-  // CLEANING SERVICES
+
   const cleaningServices = ['Home Deep Cleaning', 'Bathroom Cleaning', 'Kitchen Cleaning', 'Sofa Cleaning', 'Carpet Cleaning', 'Office Cleaning', 'Move-in / Move-out Cleaning'];
   cleaningServices.forEach(s => pushService('c7', 'cleaning', s, '₹' + (Math.floor(Math.random() * 2000) + 499), '3 hrs', 'placeholder', `Spotless and hygienic ${s} by professionals.`));
 
-  // INSTALLATION SERVICES
+
   const installationServices = ['TV Wall Mounting', 'Furniture Assembly', 'Curtain Installation', 'Wall Shelf Installation', 'Mirror Installation', 'Smart Device Installation', 'Appliance Installation'];
   installationServices.forEach(s => pushService('c8', 'installation', s, '₹' + (Math.floor(Math.random() * 300) + 199), '1 hr', 'placeholder', `Hassle-free ${s} for your home or office.`));
 

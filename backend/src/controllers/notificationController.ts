@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { Notification } from '../models/Notification';
 
-// @route   GET /api/notifications
+
 export const getMyNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const notifications = await Notification.find({ user: req.user?._id }).sort({ createdAt: -1 });
@@ -12,7 +12,7 @@ export const getMyNotifications = async (req: AuthRequest, res: Response): Promi
   }
 };
 
-// @route   PUT /api/notifications/:id/read
+
 export const markNotificationRead = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const notification = await Notification.findById(req.params.id);

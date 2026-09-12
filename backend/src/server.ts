@@ -28,7 +28,7 @@ connectDB();
 const app = express();
 const httpServer = http.createServer(app);
 
-// Initialize Socket.IO
+
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
@@ -37,16 +37,16 @@ const io = new Server(httpServer, {
 });
 initializeSocket(io);
 
-// Make io accessible in routes if needed (e.g., req.app.get('io'))
+
 app.set('io', io);
 
-// Security Headers
+
 app.use(helmet());
 
-// Rate Limiting
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api', limiter);

@@ -5,7 +5,7 @@ export interface INotification extends Document {
   title: string;
   message: string;
   type: 'BOOKING' | 'SYSTEM' | 'PROMO';
-  relatedId?: mongoose.Types.ObjectId; // E.g., Booking ID
+  relatedId?: mongoose.Types.ObjectId;
   isRead: boolean;
 }
 

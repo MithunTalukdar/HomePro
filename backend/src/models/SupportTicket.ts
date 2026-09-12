@@ -3,10 +3,10 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface ISupportTicket extends Document {
   customerId: mongoose.Types.ObjectId;
   bookingId?: mongoose.Types.ObjectId;
-  issueType: string; // Booking, Payment, Technician, Refund, Warranty, General
+  issueType: string;
   subject: string;
   description: string;
-  status: string; // OPEN, IN_PROGRESS, WAITING_FOR_CUSTOMER, RESOLVED, CLOSED
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }
