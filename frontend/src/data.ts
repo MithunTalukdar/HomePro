@@ -14,6 +14,8 @@ export interface Technician {
   serviceAreas: string[];
   estimatedArrival: string;
   languages: string[];
+  specialty?: string;
+  hourlyRate?: string;
 }
 
 export const technicians: Technician[] = [

@@ -4,7 +4,7 @@ import type { Technician } from '../data';
 
 interface TechnicianCardProps {
   technician: Technician;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export function TechnicianCard({ technician, onClick }: TechnicianCardProps) {
@@ -28,34 +28,30 @@ export function TechnicianCard({ technician, onClick }: TechnicianCardProps) {
           {technician.rating} ({technician.reviews})
         </div>
       </motion.div>
-      <motion.div className="tech-content" layoutId={`card-content-${technician.id}`}>
+
+      <div className="tech-info">
         <div className="tech-header">
-          <div>
-            <motion.h3 layoutId={`card-name-${technician.id}`} className="tech-name">
-              {technician.name} {technician.verified && <ShieldCheck color="var(--secondary)" size={18} />}
-            </motion.h3>
-            <span className="tech-role">{technician.role}</span>
-          </div>
+          <h3 className="tech-name">{technician.name}</h3>
+          <ShieldCheck size={18} className="verified-badge" />
         </div>
-        <div className="tech-stats">
-          <div className="tech-stat">
-            <span className="stat-val">{technician.experience}</span>
-            <span className="stat-label">Experience</span>
-          </div>
-          <div className="tech-stat">
-            <span className="stat-val">{technician.jobsCompleted}+</span>
-            <span className="stat-label">Jobs</span>
-          </div>
+
+        <p className="tech-specialty">{technician.role}</p>
+
+        <div className="tech-meta">
+          <span className="experience-pill">{technician.experience}</span>
+          <span className="price-tag">{technician.availability}</span>
         </div>
-        <div className="tech-skills">
-          {technician.skills.slice(0, 3).map(skill => (
-            <span key={skill} className="skill-tag">{skill}</span>
+
+        <p className="tech-bio">{technician.bio}</p>
+
+        <div className="skills-container">
+          {technician.skills.map((skill, index) => (
+            <span key={index} className="skill-pill">
+              {skill}
+            </span>
           ))}
-          {technician.skills.length > 3 && (
-            <span className="skill-tag">+{technician.skills.length - 3}</span>
-          )}
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
