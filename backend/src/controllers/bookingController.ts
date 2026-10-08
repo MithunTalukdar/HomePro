@@ -5,7 +5,21 @@ import { Booking } from '../models/Booking';
 
 export const createBooking = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { serviceId, serviceName, date, timeSlot, address, price } = req.body;
+    const { 
+      serviceId, 
+      serviceName, 
+      date, 
+      timeSlot, 
+      address, 
+      price, 
+      paymentMethod = 'CASH', 
+      paymentStatus = 'PENDING',
+      couponId,
+      discountAmount = 0 
+    } = req.body;
+
+    const normalizedPaymentMethod = (paymentMethod || 'CASH').toUpperCase();
+    const isCash = normalizedPaymentMethod === 'CASH' || normalizedPaymentMethod === 'COD';
 
     const booking = await Booking.create({
       serviceId,
@@ -15,7 +29,18 @@ export const createBooking = async (req: AuthRequest, res: Response): Promise<vo
       timeSlot,
       address,
       price,
-      statusHistory: [{ status: 'REQUESTED', timestamp: new Date() }]
+      paymentMethod: isCash ? 'CASH' : 'ONLINE',
+      paymentStatus: paymentStatus || 'PENDING',
+      couponId: couponId || undefined,
+      discountAmount,
+      status: 'CONFIRMED',
+      statusHistory: [
+        { 
+          status: 'CONFIRMED', 
+          timestamp: new Date(),
+          note: isCash ? 'Booking confirmed with Cash on Delivery (Pay after service)' : 'Booking initiated with Online Payment'
+        }
+      ]
     });
 
     res.status(201).json(booking);

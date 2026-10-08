@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { fetchApi } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, Briefcase, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Briefcase, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export function Login() {
@@ -22,7 +22,10 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Specific error states for explicit manual feedback
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
 
   useEffect(() => {
     const currentType = searchParams.get('type') === 'technician' ? 'technician' : 'customer';
@@ -31,12 +34,39 @@ export function Login() {
     }
   }, [role, searchParams, navigate, location.state]);
 
+  const validateForm = (): boolean => {
+    const errs: { email?: string; password?: string } = {};
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      errs.email = 'Please enter your email address.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(trimmedEmail)) {
+        errs.email = 'Please enter a valid email address (e.g. name@example.com).';
+      }
+    }
+
+    if (!password) {
+      errs.password = 'Please enter your password.';
+    } else if (password.length < 6) {
+      errs.password = 'Password must be at least 6 characters.';
+    }
+
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      setError('Please resolve the errors highlighted below.');
+      return false;
+    }
+    return true;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    if (!validateForm()) {
       return;
     }
     
@@ -45,7 +75,7 @@ export function Login() {
     try {
       const data = await fetchApi('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password })
       });
       
       login(data, data.token);
@@ -55,17 +85,27 @@ export function Login() {
         return;
       }
       
-
       if (data.role === 'ADMIN' || data.role === 'SUPER_ADMIN') {
         navigate('/admin/dashboard', { replace: true });
       } else if (data.role === 'TECHNICIAN') {
         navigate('/technician/dashboard', { replace: true });
       } else {
-
         navigate('/', { replace: true });
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      const errMsg = err.message || '';
+      const errField = err.field || '';
+
+      // Specific explicit error mapping
+      if (errField === 'password' || errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('incorrect') || errMsg.toLowerCase().includes('invalid password')) {
+        setFieldErrors({ password: 'Invalid password. Please double check and try again.' });
+        setError('Login failed: Invalid password. Please verify your credentials or click Forgot Password.');
+      } else if (errField === 'email' || errMsg.toLowerCase().includes('no account') || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('unregistered')) {
+        setFieldErrors({ email: 'No account found with this email. Please verify or create an account.' });
+        setError('Login failed: No account registered with this email address. Please sign up first.');
+      } else {
+        setError(errMsg || 'Failed to sign in. Please verify your email and password.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +114,7 @@ export function Login() {
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', position: 'relative', overflow: 'hidden', padding: '2rem 1rem' }}>
       
-      
+      {/* Background Ambient Glows */}
       <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       
@@ -103,12 +143,13 @@ export function Login() {
           overflow: 'hidden'
         }}>
           
-          
+          {/* Top Auth Navigation Tabs */}
           <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
             <div style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderBottom: '2px solid var(--primary)', color: '#fff', fontWeight: 600, cursor: 'default' }}>
               Sign In
             </div>
             <button 
+              type="button"
               onClick={() => navigate(`/auth/signup?type=${role}`)}
               style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-muted)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseOver={e => e.currentTarget.style.color = '#fff'}
@@ -120,7 +161,7 @@ export function Login() {
 
           <div style={{ padding: '2.5rem' }}>
             
-            
+            {/* Account Role Selector */}
             <div style={{ marginBottom: '2rem' }}>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.75rem', fontWeight: 500 }}>Continue as</p>
               <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -155,60 +196,123 @@ export function Login() {
               </div>
             </div>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} noValidate>
+              
+              {/* Overall Error Alert Banner */}
               <AnimatePresence mode="wait">
                 {error && (
                   <motion.div 
-                    initial={{ opacity: 0, height: 0 }} 
-                    animate={{ opacity: 1, height: 'auto' }} 
-                    exit={{ opacity: 0, height: 0 }}
-                    style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '0.75rem 1rem', borderRadius: '0.75rem', marginBottom: '1.5rem', fontSize: '0.875rem', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center' }}
+                    initial={{ opacity: 0, y: -10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -10 }}
+                    style={{ 
+                      background: 'rgba(239, 68, 68, 0.12)', 
+                      color: '#f87171', 
+                      padding: '0.85rem 1rem', 
+                      borderRadius: '0.75rem', 
+                      marginBottom: '1.5rem', 
+                      fontSize: '0.875rem', 
+                      border: '1px solid rgba(239, 68, 68, 0.35)', 
+                      display: 'flex', 
+                      alignItems: 'flex-start',
+                      gap: '0.5rem',
+                      lineHeight: 1.4
+                    }}
                   >
-                    {error}
+                    <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>{error}</div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
+              {/* Email Address Field */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>Email Address</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                  Email Address
+                </label>
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                  <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: fieldErrors.email ? '#ef4444' : 'var(--text-muted)', pointerEvents: 'none' }}>
                     <Mail size={18} />
                   </div>
                   <input 
                     type="email" 
                     style={{ 
                       background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                      border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '0.75rem', width: '100%', color: '#fff',
-                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem'
+                      border: `1px solid ${fieldErrors.email ? '#ef4444' : 'rgba(255, 255, 255, 0.1)'}`, 
+                      borderRadius: '0.75rem', width: '100%', color: '#fff',
+                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
+                      boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
                     }}
-                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    onFocus={e => { 
+                      if (!fieldErrors.email) {
+                        e.currentTarget.style.borderColor = 'var(--primary)'; 
+                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; 
+                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                      }
+                    }}
+                    onBlur={e => { 
+                      if (!fieldErrors.email) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; 
+                        e.currentTarget.style.boxShadow = 'none'; 
+                      }
+                    }}
                     placeholder="Enter your email"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => {
+                      setEmail(e.target.value);
+                      if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
+                      if (error) setError('');
+                    }}
                   />
                 </div>
+                {/* Specific Inline Email Error */}
+                {fieldErrors.email && (
+                  <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <AlertCircle size={14} /> {fieldErrors.email}
+                  </div>
+                )}
               </div>
 
+              {/* Password Field */}
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>Password</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                  Password
+                </label>
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                  <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: fieldErrors.password ? '#ef4444' : 'var(--text-muted)', pointerEvents: 'none' }}>
                     <Lock size={18} />
                   </div>
                   <input 
                     type={showPassword ? 'text' : 'password'} 
                     style={{ 
                       background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '2.75rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                      border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '0.75rem', width: '100%', color: '#fff',
-                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem'
+                      border: `1px solid ${fieldErrors.password ? '#ef4444' : 'rgba(255, 255, 255, 0.1)'}`, 
+                      borderRadius: '0.75rem', width: '100%', color: '#fff',
+                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
+                      boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
                     }}
-                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    onFocus={e => { 
+                      if (!fieldErrors.password) {
+                        e.currentTarget.style.borderColor = 'var(--primary)'; 
+                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; 
+                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                      }
+                    }}
+                    onBlur={e => { 
+                      if (!fieldErrors.password) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; 
+                        e.currentTarget.style.boxShadow = 'none'; 
+                      }
+                    }}
                     placeholder="Enter your password"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={e => {
+                      setPassword(e.target.value);
+                      if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
+                      if (error) setError('');
+                    }}
                   />
                   <button 
                     type="button"
@@ -219,14 +323,22 @@ export function Login() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {/* Specific Inline Password Error */}
+                {fieldErrors.password && (
+                  <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <AlertCircle size={14} /> {fieldErrors.password}
+                  </div>
+                )}
               </div>
 
+              {/* Forgot Password Link */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
                 <Link to="/auth/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--primary-light)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'var(--primary-light)'}>
                   Forgot Password?
                 </Link>
               </div>
 
+              {/* Submit Button */}
               <motion.button 
                 type="submit" 
                 whileHover={{ scale: 1.02, translateY: -2 }}

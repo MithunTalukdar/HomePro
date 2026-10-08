@@ -179,7 +179,12 @@ export function CategoryPage() {
                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', flex: 1, cursor: 'pointer' }}
                   >
                     <div className="popular-image-wrapper">
-                      <img src={service.image} alt={service.name} className="popular-image" />
+                      <img 
+                        src={service.image} 
+                        alt={service.name} 
+                        onError={(e) => { e.currentTarget.src = `/images/services/${service.slug}.jpg`; }}
+                        className="popular-image" 
+                      />
                     </div>
                     <div className="popular-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <div className="popular-header">

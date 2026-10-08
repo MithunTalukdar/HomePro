@@ -3,6 +3,8 @@ import { Search, MapPin, ShieldCheck, Star, Clock, ChevronLeft, ChevronRight } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLocationContext } from '../context/LocationContext';
+import { services } from '../data';
 
 export const servicesHero = [
   {
@@ -64,8 +66,37 @@ export const servicesHero = [
 
 export function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { city, area, openLocationModal } = useLocationContext();
+
+  const matchingServices = searchQuery.trim()
+    ? services.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.categorySlug.includes(searchQuery.toLowerCase())).slice(0, 5)
+    : [];
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (matchingServices.length > 0) {
+      navigate(`/services/${matchingServices[0].categorySlug}/${matchingServices[0].slug}`);
+    } else if (searchQuery.trim()) {
+      navigate(`/services?search=${encodeURIComponent(searchQuery)}`);
+    } else {
+      navigate('/services');
+    }
+  };
   
 
   useEffect(() => {
@@ -204,23 +235,112 @@ export function Hero() {
         </AnimatePresence>
 
         
+        {/* Interactive Search & Location Bar */}
         <motion.div 
+          ref={searchRef}
           className="search-container glass"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          style={{ width: '100%' }}
+          style={{ width: '100%', position: 'relative' }}
         >
-          <div className="search-input-group">
-            <Search size={20} color="var(--text-muted)" />
-            <input type="text" className="search-input" placeholder="Search for a service (e.g., Fan Repair)" style={{ color: 'var(--text-main)', background: 'transparent' }} />
+          {/* Service Search Input */}
+          <div className="search-input-group" style={{ position: 'relative' }}>
+            <Search size={20} color="var(--primary-light)" />
+            <input 
+              type="text" 
+              className="search-input" 
+              placeholder="Search services (e.g., Fan Repair, AC Cleaning...)" 
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleSearchSubmit();
+              }}
+              style={{ color: 'var(--text-main)', background: 'transparent' }} 
+            />
+            {/* Live Autocomplete Dropdown */}
+            <AnimatePresence>
+              {showSuggestions && matchingServices.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 12px)',
+                    left: 0,
+                    right: 0,
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                    zIndex: 50,
+                    overflow: 'hidden'
+                  }}
+                >
+                  {matchingServices.map(s => (
+                    <div
+                      key={s.id}
+                      onClick={() => {
+                        navigate(`/services/${s.categorySlug}/${s.slug}`);
+                        setShowSuggestions(false);
+                      }}
+                      style={{
+                        padding: '0.85rem 1.25rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseOver={e => e.currentTarget.style.background = 'rgba(79, 70, 229, 0.15)'}
+                      onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <img src={s.image} alt={s.name} style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover' }} />
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.95rem' }}>{s.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{s.categorySlug.replace('-', ' ')} • {s.duration}</div>
+                        </div>
+                      </div>
+                      <span style={{ fontWeight: 700, color: 'var(--primary-light)', fontSize: '0.95rem' }}>{s.price}</span>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
           <div className="search-divider" style={{ backgroundColor: 'var(--border)' }}></div>
-          <div className="search-input-group">
-            <MapPin size={20} color="var(--text-muted)" />
-            <input type="text" className="search-input" placeholder="Zip code or City" style={{ color: 'var(--text-main)', background: 'transparent' }} />
+
+          {/* Location Picker Trigger */}
+          <div 
+            className="search-input-group" 
+            onClick={openLocationModal} 
+            style={{ cursor: 'pointer' }}
+            title="Click to change location"
+          >
+            <MapPin size={20} color="var(--accent-electric)" />
+            <div style={{ color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {area}, {city}
+            </div>
+            <span style={{ marginLeft: 'auto', fontSize: '0.75rem', background: 'rgba(79, 70, 229, 0.2)', color: 'var(--primary-light)', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-full)', border: '1px solid rgba(79, 70, 229, 0.3)' }}>
+              Change
+            </span>
           </div>
-          <button className="btn btn-primary search-btn">Book Now</button>
+
+          <button 
+            type="button"
+            className="btn btn-primary search-btn"
+            onClick={() => handleSearchSubmit()}
+          >
+            Book Now
+          </button>
         </motion.div>
 
         

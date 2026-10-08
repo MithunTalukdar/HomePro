@@ -20,6 +20,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   addresses: IAddress[];
   resetPasswordToken?: string;
+  resetPasswordOtp?: string;
   resetPasswordExpire?: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
   getResetPasswordToken(): string;
@@ -44,6 +45,7 @@ const userSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     addresses: [addressSchema],
     resetPasswordToken: { type: String },
+    resetPasswordOtp: { type: String },
     resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
@@ -54,10 +56,11 @@ userSchema.methods.matchPassword = async function (enteredPassword: string) {
 };
 
 userSchema.methods.getResetPasswordToken = function (): string {
-
   const resetToken = crypto.randomBytes(20).toString('hex');
-
   this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Generate 6-digit OTP code for easy manual entry
+  this.resetPasswordOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
   this.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
   return resetToken;

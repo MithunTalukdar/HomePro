@@ -33,10 +33,10 @@ export const getStats = async (req: AuthRequest, res: Response): Promise<void> =
     let monthlyRevenue = 0;
     
     allCompleted.forEach(booking => {
-      const amount = parseInt(booking.price.replace(/\\D/g, '')) || 0;
+      const amount = parseInt(booking.price.replace(/\D/g, '')) || 0;
       totalRevenue += amount;
       
-      const bookingDate = new Date(booking.createdAt);
+      const bookingDate = new Date((booking as any).createdAt);
       if (bookingDate >= today) {
         todaysRevenue += amount;
       }
@@ -134,7 +134,7 @@ export const getAllTechnicians = async (req: AuthRequest, res: Response): Promis
     const profiles = await TechnicianProfile.find();
     
     const combined = await Promise.all(technicians.map(async (t) => {
-      const profile = profiles.find(p => p.userId.toString() === t._id.toString());
+      const profile = profiles.find(p => (p as any).userId?.toString() === t._id.toString() || (p as any).user?.toString() === t._id.toString());
       
       const assignedJobs = await Booking.countDocuments({ technicianId: t._id });
       const completedJobs = await Booking.countDocuments({ technicianId: t._id, status: 'COMPLETED' });

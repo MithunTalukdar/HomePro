@@ -57,7 +57,12 @@ export function ServiceDetail() {
 
       
       <div style={{ position: 'relative', height: '450px', width: '100%' }}>
-        <img src={service.image} alt={service.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img 
+          src={service.image} 
+          alt={service.name} 
+          onError={(e) => { e.currentTarget.src = `/images/services/${service.slug}.jpg`; }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+        />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--background) 0%, rgba(15, 23, 42, 0.4) 100%)' }}></div>
         <div className="container" style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', paddingBottom: '2rem' }}>
           <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '0.5rem' }}>

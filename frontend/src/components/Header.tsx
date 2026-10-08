@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Home, Menu, X, User, LogOut, Briefcase } from 'lucide-react';
+import { Home, Menu, X, User, LogOut, Briefcase, MapPin, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LoginSelectionModal } from './auth/LoginSelectionModal';
 import { useAuth } from '../context/AuthContext';
+import { useLocationContext } from '../context/LocationContext';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, logout } = useAuth();
+  const { city, area, openLocationModal } = useLocationContext();
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,24 +73,56 @@ export function Header() {
           padding: '1rem 0'
         }}
       >
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link to="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-            <div style={{ 
-              background: 'linear-gradient(135deg, var(--primary), var(--accent-electric))', 
-              padding: '0.5rem', 
-              borderRadius: '0.75rem', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              color: 'white',
-              boxShadow: 'var(--shadow-glow)'
-            }}>
-              <Home size={22} strokeWidth={2.5} />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.5px', color: '#fff', whiteSpace: 'nowrap' }}>
-              Home<span style={{ color: 'var(--primary-light)' }}>Pro</span>
-            </span>
-          </Link>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <Link to="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, var(--primary), var(--accent-electric))', 
+                padding: '0.5rem', 
+                borderRadius: '0.75rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: 'white',
+                boxShadow: 'var(--shadow-glow)'
+              }}>
+                <Home size={22} strokeWidth={2.5} />
+              </div>
+              <span style={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.5px', color: '#fff', whiteSpace: 'nowrap' }}>
+                Home<span style={{ color: 'var(--primary-light)' }}>Pro</span>
+              </span>
+            </Link>
+
+            {/* Desktop Location Selector */}
+            <button
+              type="button"
+              onClick={openLocationModal}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.45rem 0.85rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: 'var(--radius-full)',
+                color: '#fff',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                backdropFilter: 'blur(8px)'
+              }}
+              onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--primary-light)'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.15)'; }}
+              onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
+              title="Click to change location"
+            >
+              <MapPin size={15} color="var(--accent-electric)" />
+              <span style={{ maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {area}, {city}
+              </span>
+              <ChevronDown size={13} color="var(--text-muted)" />
+            </button>
+          </div>
           
           <nav className="nav-links" style={{ alignItems: 'center' }}>
             {links.map((link) => {
@@ -179,6 +213,31 @@ export function Header() {
                 display: 'flex', flexDirection: 'column', gap: '1rem'
               }}
             >
+              {/* Mobile Location Selector */}
+              <button
+                type="button"
+                onClick={() => { setIsMobileMenuOpen(false); openLocationModal(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(79, 70, 229, 0.15)',
+                  border: '1px solid rgba(79, 70, 229, 0.3)',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  textAlign: 'left'
+                }}
+              >
+                <MapPin size={18} color="var(--accent-electric)" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Service Location</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{area}, {city}</div>
+                </div>
+                <ChevronDown size={16} color="var(--text-muted)" />
+              </button>
+
               {links.map((link) => (
                 <a 
                   key={link.name} 

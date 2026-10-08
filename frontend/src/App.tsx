@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { LocationProvider } from './context/LocationContext';
+import { LocationModal } from './components/LocationModal';
 import { Suspense, lazy } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -12,14 +14,14 @@ import { BookingConfirmation } from './pages/BookingConfirmation';
 import { AIAssistant } from './components/AIAssistant';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
-
+// Authentication Pages
 import { Login } from './pages/auth/Login';
 import { SignUp } from './pages/auth/SignUp';
 import { VerifyOTP } from './pages/auth/VerifyOTP';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 
-
+// Customer Dashboard Pages
 const DashboardLayout = lazy(() => import('./components/dashboard/DashboardLayout').then(m => ({ default: m.DashboardLayout })));
 const Overview = lazy(() => import('./pages/dashboard/Overview').then(m => ({ default: m.Overview })));
 const Invoices = lazy(() => import('./pages/dashboard/Invoices').then(m => ({ default: m.Invoices })));
@@ -30,14 +32,14 @@ const BookingTracker = lazy(() => import('./pages/dashboard/BookingTracker').the
 const Addresses = lazy(() => import('./pages/dashboard/Addresses').then(m => ({ default: m.Addresses })));
 const Bookings = lazy(() => import('./pages/dashboard/Bookings').then(m => ({ default: m.Bookings })));
 
-
+// Technician Pages
 const TechnicianOnboarding = lazy(() => import('./pages/technician/Onboarding').then(m => ({ default: m.Onboarding })));
 const TechnicianDashboardLayout = lazy(() => import('./components/technician/TechnicianDashboardLayout').then(m => ({ default: m.TechnicianDashboardLayout })));
 const TechnicianDashboardOverview = lazy(() => import('./pages/technician/DashboardOverview').then(m => ({ default: m.TechnicianDashboardOverview })));
 const NewJobs = lazy(() => import('./pages/technician/NewJobs').then(m => ({ default: m.NewJobs })));
 const ActiveJobs = lazy(() => import('./pages/technician/ActiveJobs').then(m => ({ default: m.ActiveJobs })));
 
-
+// Admin Pages
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 const AdminOverview = lazy(() => import('./pages/admin/DashboardOverview').then(m => ({ default: m.DashboardOverview })));
 const AdminUsers = lazy(() => import('./pages/admin/Users').then(m => ({ default: m.Users })));
@@ -57,10 +59,11 @@ const Loader = () => <div style={{ padding: '4rem', textAlign: 'center', minHeig
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <LocationProvider>
+        <Router>
       <div className="app-container">
         <Routes>
-          
+          {/* Public & Customer Routes */}
           <Route path="/" element={<><Header /><Home /><Footer /></>} />
           <Route path="/services" element={<><Header /><Services /><Footer /></>} />
           <Route path="/services/:categorySlug" element={<><Header /><CategoryPage /><Footer /></>} />
@@ -78,16 +81,16 @@ function App() {
             </ProtectedRoute>
           } />
           
-          
+          {/* Auth Routes */}
           <Route path="/auth/login" element={<><Header /><Login /><Footer /></>} />
           <Route path="/auth/signup" element={<><Header /><SignUp /><Footer /></>} />
           <Route path="/auth/verify-otp" element={<><Header /><VerifyOTP /><Footer /></>} />
-          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/auth/forgot-password" element={<><Header /><ForgotPassword /><Footer /></>} />
+          <Route path="/auth/reset-password" element={<><Header /><ResetPassword /><Footer /></>} />
+          <Route path="/auth/reset-password/:token" element={<><Header /><ResetPassword /><Footer /></>} />
           <Route path="/technician/register" element={<TechnicianOnboarding />} />
 
-          
+          {/* Customer Dashboard */}
           <Route path="/dashboard" element={
             <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
               <Suspense fallback={<Loader />}><DashboardLayout /></Suspense>
@@ -104,7 +107,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
           </Route>
 
-          
+          {/* Technician Dashboard */}
           <Route path="/technician/dashboard" element={
             <ProtectedRoute allowedRoles={['TECHNICIAN']}>
               <Suspense fallback={<Loader />}><TechnicianDashboardLayout /></Suspense>
@@ -117,7 +120,7 @@ function App() {
             <Route path="history" element={<ActiveJobs />} />
           </Route>
 
-          
+          {/* Admin Dashboard */}
           <Route path="/admin/dashboard" element={
             <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
               <Suspense fallback={<Loader />}><AdminLayout /></Suspense>
@@ -137,8 +140,10 @@ function App() {
           </Route>
         </Routes>
         <AIAssistant />
+        <LocationModal />
       </div>
     </Router>
+    </LocationProvider>
     </AuthProvider>
   );
 }

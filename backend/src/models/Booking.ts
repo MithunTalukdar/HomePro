@@ -14,6 +14,10 @@ export interface IBooking extends Document {
     pincode: string;
   };
   price: string;
+  paymentMethod?: 'CASH' | 'ONLINE' | 'COD';
+  paymentStatus?: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  couponId?: mongoose.Types.ObjectId;
+  discountAmount?: number;
   status: 'REQUESTED' | 'CONFIRMED' | 'ASSIGNED' | 'ON_THE_WAY' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   statusHistory: {
     status: string;
@@ -27,6 +31,8 @@ export interface IBooking extends Document {
     beforeImages?: string[];
     afterImages?: string[];
   };
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const bookingSchema = new Schema<IBooking>(
@@ -44,6 +50,7 @@ const bookingSchema = new Schema<IBooking>(
       pincode: { type: String, required: true },
     },
     price: { type: String, required: true },
+    paymentMethod: { type: String, enum: ['CASH', 'ONLINE', 'COD'], default: 'CASH' },
     paymentStatus: { type: String, enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'], default: 'PENDING' },
     couponId: { type: Schema.Types.ObjectId, ref: 'Coupon' },
     discountAmount: { type: Number, default: 0 },

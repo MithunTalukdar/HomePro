@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Search, Filter, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Calendar, MapPin, Banknote, CreditCard } from 'lucide-react';
 import { fetchApi } from '../../services/api';
 import { Link } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ export function Bookings() {
   
   const displayBookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
 
-  if (isLoading) return <div>Loading bookings...</div>;
+  if (isLoading) return <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>Loading bookings...</div>;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -51,7 +51,6 @@ export function Bookings() {
       <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Booking History</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>View and manage all your service bookings.</p>
 
-      
       <div style={{ display: 'flex', gap: '2rem', borderBottom: '1px solid var(--border)', marginBottom: '2rem' }}>
         <button 
           onClick={() => setActiveTab('upcoming')}
@@ -70,7 +69,8 @@ export function Bookings() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {displayBookings.length === 0 && (
           <div style={{ padding: '3rem', textAlign: 'center', background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
-            <p style={{ color: 'var(--text-muted)' }}>No bookings found.</p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>No bookings found in this category.</p>
+            <Link to="/services" className="btn btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>Explore Services</Link>
           </div>
         )}
         
@@ -90,18 +90,46 @@ export function Bookings() {
               </div>
             </div>
 
-            <div style={{ padding: '1.5rem', display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
+            <div style={{ padding: '1.5rem', display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
               <div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Schedule</div>
-                <div style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Calendar size={16} /> {booking.date} at {booking.timeSlot}</div>
+                <div style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Calendar size={16} /> {booking.date} at {booking.timeSlot}
+                </div>
               </div>
+
               <div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Location</div>
-                <div style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={16} /> {booking.address?.city || 'Default City'}</div>
+                <div style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <MapPin size={16} /> {booking.address?.city || 'Selected City'}
+                </div>
               </div>
+
               <div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Total Price</div>
-                <div style={{ fontWeight: 600, color: 'var(--primary-light)', fontSize: '1.1rem' }}>{booking.price}</div>
+                <div style={{ fontWeight: 600, color: 'var(--primary-light)', fontSize: '1.1rem' }}>₹{booking.price}</div>
+              </div>
+
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Payment Method</div>
+                <div style={{ 
+                  fontWeight: 600, 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '0.35rem', 
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  background: booking.paymentMethod === 'ONLINE' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.12)',
+                  color: booking.paymentMethod === 'ONLINE' ? '#10b981' : '#f59e0b',
+                  border: `1px solid ${booking.paymentMethod === 'ONLINE' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`
+                }}>
+                  {booking.paymentMethod === 'ONLINE' ? (
+                    <><CreditCard size={14} /> Paid Online</>
+                  ) : (
+                    <><Banknote size={14} /> Cash on Delivery (Pay after service)</>
+                  )}
+                </div>
               </div>
             </div>
 
