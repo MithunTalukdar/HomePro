@@ -57,20 +57,24 @@ You can choose either of the following two deployment methods:
 
 ---
 
-## 📦 Method 2: Single Fullstack Project (Root Deployment)
+## 📦 Method 2: Single Fullstack Project with Vercel Services (Multi-Service Project)
 
-If you prefer deploying the entire app under a single Vercel domain:
+If you prefer deploying the entire app under a single Vercel domain with independent services:
 1. In Vercel Dashboard, import the repository.
 2. Leave **Root Directory** as **`./` (Root)**.
-3. The root `vercel.json` will automatically build:
-   - `frontend` with `@vercel/static-build` (Vite)
-   - `backend/api/index.ts` with `@vercel/node` (Express Serverless API)
-4. Add your Backend environment variables:
+3. The root `vercel.json` configures the project in **Vercel Services** mode:
+   - **`backend` service**: Built and deployed via the Express framework preset (`entrypoint: src/app.ts`) with a caller-side service binding injecting the frontend URL into `FRONTEND_URL`.
+   - **`frontend` service**: Built via Vite (`framework: vite`) with SPA client-side routing fallback.
+4. Top-level rewrites route public traffic:
+   - `/api` and `/api/(.*)` route directly to the `backend` service.
+   - `/(.*)` routes to the `frontend` service.
+5. Add your Backend environment variables in Vercel project settings:
    - `MONGO_URI`
    - `JWT_SECRET`
    - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
-5. Click **"Deploy"**.
-6. All `/api/*` routes are handled by the backend function, and all page routes (`/`, `/services`, `/auth/*`, `/dashboard/*`) are handled by Vite!
+   *(Note: `FRONTEND_URL` is automatically injected at runtime via the service binding!)*
+6. Click **"Deploy"**.
+7. Test locally using `vercel dev`.
 
 ---
 

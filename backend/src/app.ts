@@ -15,6 +15,7 @@ import supportRoutesImport from './routes/supportRoutes';
 import couponRoutesImport from './routes/couponRoutes';
 import aiRoutesImport from './routes/aiRoutes';
 import { notFound, errorHandler } from './middleware/errorMiddleware';
+import { connectDB } from './config/db';
 
 const unwrap = (m: any) => (m && m.default ? m.default : m);
 const authRoutes = unwrap(authRoutesImport);
@@ -68,12 +69,26 @@ app.use(
 
 app.use(express.json());
 
+// Ensure MongoDB is connected for serverless invocations
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+  } catch (err: any) {
+    console.error('Database connection error in request:', err?.message || err);
+  }
+  next();
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'API is running', timestamp: new Date().toISOString() });
 });
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'API is running', timestamp: new Date().toISOString() });
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'HomePro API is running', timestamp: new Date().toISOString() });
 });
 
 app.get('/', (req, res) => {
