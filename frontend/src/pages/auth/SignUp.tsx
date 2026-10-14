@@ -4,6 +4,8 @@ import { fetchApi } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Phone, Briefcase, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 export function SignUp() {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ export function SignUp() {
   const initialRole = searchParams.get('type') === 'technician' ? 'technician' : 'customer';
   const [role, setRole] = useState<'customer' | 'technician'>(initialRole);
   const { login } = useAuth();
+  const { toast } = useToast();
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
@@ -68,6 +71,7 @@ export function SignUp() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent multiple submissions
     setError('');
     setFieldErrors({});
 
@@ -90,6 +94,7 @@ export function SignUp() {
 
       // Update auth context
       login(data, data.token);
+      toast.success('Your account has been created successfully!', 'Welcome to HomePro');
 
       if (data.role === 'ADMIN' || data.role === 'SUPER_ADMIN') {
         navigate('/admin/dashboard', { replace: true });
@@ -105,14 +110,18 @@ export function SignUp() {
       if (errField === 'email' || errMsg.toLowerCase().includes('email already') || errMsg.toLowerCase().includes('already exists')) {
         setFieldErrors({ email: 'An account with this email already exists. Please sign in instead.' });
         setError('This email is already registered. Please sign in or use a different email.');
+        toast.error('This email is already registered.', 'Registration Failed');
       } else if (errField === 'phone' || errMsg.toLowerCase().includes('phone')) {
         setFieldErrors({ phone: 'This phone number is already associated with another account.' });
         setError('Phone number already registered. Please use another number or sign in.');
+        toast.error('This phone number is already registered.', 'Registration Failed');
       } else if (errField === 'password') {
         setFieldErrors({ password: errMsg });
         setError(errMsg);
       } else {
-        setError(errMsg || 'Failed to create account. Please check your information and try again.');
+        const fallbackMsg = errMsg || 'Failed to create account. Please check your information and try again.';
+        setError(fallbackMsg);
+        toast.error(fallbackMsg, 'Registration Failed');
       }
     } finally {
       setIsLoading(false);
@@ -122,63 +131,65 @@ export function SignUp() {
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', position: 'relative', overflow: 'hidden', padding: '2rem 1rem' }}>
       {/* Background Ambient Glows */}
-      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
 
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         style={{ width: '100%', maxWidth: '480px', zIndex: 10, position: 'relative' }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #a5b4fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #c7d2fe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.5px' }}>
             Create an Account
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.5 }}>
             Join thousands of satisfied customers on HomePro
           </p>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.6)', 
+          background: 'rgba(15, 23, 42, 0.72)', 
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderRadius: '1.5rem', 
-          border: '1px solid rgba(255, 255, 255, 0.08)', 
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.1)', 
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
           overflow: 'hidden'
         }}>
           {/* Header Tabs */}
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <button 
+              type="button"
               onClick={() => navigate(`/auth/login?type=${role}`)}
-              style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-muted)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ flex: 1, textAlign: 'center', padding: '1.15rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-muted)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseOver={e => e.currentTarget.style.color = '#fff'}
               onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}
             >
               Sign In
             </button>
-            <div style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderBottom: '2px solid var(--primary)', color: '#fff', fontWeight: 600, cursor: 'default' }}>
+            <div style={{ flex: 1, textAlign: 'center', padding: '1.15rem', background: 'rgba(255,255,255,0.04)', borderBottom: '2px solid var(--primary)', color: '#fff', fontWeight: 600, cursor: 'default' }}>
               Sign Up
             </div>
           </div>
 
-          <div style={{ padding: '2.5rem' }}>
+          <div style={{ padding: '2.25rem' }}>
             {/* Account Role Selector */}
-            <div style={{ marginBottom: '2rem' }}>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.75rem', fontWeight: 500 }}>Registering as</p>
-              <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ marginBottom: '1.75rem' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registering as</p>
+              <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.3)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <button
                   type="button"
                   onClick={() => { setRole('customer'); setFieldErrors({}); setError(''); }}
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
                     padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
-                    background: role === 'customer' ? 'rgba(79, 70, 229, 0.2)' : 'transparent',
+                    background: role === 'customer' ? 'rgba(79, 70, 229, 0.25)' : 'transparent',
                     color: role === 'customer' ? '#fff' : 'var(--text-muted)',
-                    border: role === 'customer' ? '1px solid rgba(79, 70, 229, 0.5)' : '1px solid transparent',
-                    transition: 'all 0.2s', fontWeight: 500
+                    border: role === 'customer' ? '1px solid rgba(109, 93, 251, 0.6)' : '1px solid transparent',
+                    boxShadow: role === 'customer' ? '0 0 15px rgba(109, 93, 251, 0.25)' : 'none',
+                    transition: 'all 0.2s', fontWeight: 600
                   }}
                 >
                   <User size={18} /> Customer
@@ -189,10 +200,11 @@ export function SignUp() {
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
                     padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
-                    background: role === 'technician' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                    background: role === 'technician' ? 'rgba(16, 185, 129, 0.22)' : 'transparent',
                     color: role === 'technician' ? '#fff' : 'var(--text-muted)',
-                    border: role === 'technician' ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid transparent',
-                    transition: 'all 0.2s', fontWeight: 500
+                    border: role === 'technician' ? '1px solid rgba(16, 185, 129, 0.6)' : '1px solid transparent',
+                    boxShadow: role === 'technician' ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none',
+                    transition: 'all 0.2s', fontWeight: 600
                   }}
                 >
                   <Briefcase size={18} /> Technician
@@ -204,16 +216,17 @@ export function SignUp() {
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                style={{ textAlign: 'center', padding: '1rem 0 2rem' }}
+                style={{ textAlign: 'center', padding: '1rem 0 1.5rem' }}
               >
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                  <Briefcase size={40} color="#10b981" />
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
+                  <Briefcase size={38} color="#10b981" />
                 </div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#fff', fontWeight: 600 }}>Join as a Professional</h3>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>Technician registration requires a few extra details to verify your expertise and service areas.</p>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#fff', fontWeight: 700 }}>Join as a Professional</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6, fontSize: '0.95rem' }}>Technician registration requires a few extra details to verify your expertise and service areas.</p>
                 <motion.button 
+                  type="button"
                   onClick={() => navigate('/technician/register')}
-                  whileHover={{ scale: 1.02, translateY: -2 }}
+                  whileHover={{ scale: 1.01, translateY: -2 }}
                   whileTap={{ scale: 0.98 }}
                   style={{ 
                     width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
@@ -240,8 +253,8 @@ export function SignUp() {
                       animate={{ opacity: 1, height: 'auto' }} 
                       exit={{ opacity: 0, height: 0 }}
                       style={{ 
-                        background: 'rgba(239, 68, 68, 0.12)', 
-                        color: '#f87171', 
+                        background: 'rgba(239, 68, 68, 0.14)', 
+                        color: '#fca5a5', 
                         padding: '0.85rem 1rem', 
                         borderRadius: '0.75rem', 
                         marginBottom: '1.5rem', 
@@ -252,15 +265,18 @@ export function SignUp() {
                         gap: '0.65rem'
                       }}
                     >
-                      <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-                      <div style={{ lineHeight: 1.4 }}>{error}</div>
+                      <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#ef4444' }} />
+                      <div style={{ lineHeight: 1.45 }}>{error}</div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 {/* Full Name Field */}
                 <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                  <label 
+                    htmlFor="signup-name"
+                    style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                  >
                     Full Name <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -268,23 +284,37 @@ export function SignUp() {
                       <User size={18} />
                     </div>
                     <input 
+                      id="signup-name"
                       type="text" 
+                      autoComplete="name"
+                      disabled={isLoading}
                       style={{ 
-                        background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                        border: fieldErrors.name ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                        borderRadius: '0.75rem', width: '100%', color: '#fff',
-                        outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                        boxShadow: fieldErrors.name ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                        background: 'rgba(0, 0, 0, 0.25)', 
+                        paddingLeft: '2.75rem', 
+                        paddingRight: '1rem', 
+                        paddingTop: '0.85rem', 
+                        paddingBottom: '0.85rem',
+                        border: fieldErrors.name ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                        borderRadius: '0.75rem', 
+                        width: '100%', 
+                        color: '#fff',
+                        outline: 'none', 
+                        transition: 'all 0.2s', 
+                        fontSize: '0.975rem',
+                        boxShadow: fieldErrors.name ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                        opacity: isLoading ? 0.7 : 1,
                       }}
                       onFocus={e => { 
                         if (!fieldErrors.name) {
                           e.currentTarget.style.borderColor = 'var(--primary)'; 
-                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                          e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                         }
                       }}
                       onBlur={e => { 
                         if (!fieldErrors.name) {
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                           e.currentTarget.style.boxShadow = 'none'; 
                         }
                       }}
@@ -309,7 +339,10 @@ export function SignUp() {
 
                 {/* Email Address Field */}
                 <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                  <label 
+                    htmlFor="signup-email"
+                    style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                  >
                     Email Address <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -317,23 +350,37 @@ export function SignUp() {
                       <Mail size={18} />
                     </div>
                     <input 
+                      id="signup-email"
                       type="email" 
+                      autoComplete="email"
+                      disabled={isLoading}
                       style={{ 
-                        background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                        border: fieldErrors.email ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                        borderRadius: '0.75rem', width: '100%', color: '#fff',
-                        outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                        boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                        background: 'rgba(0, 0, 0, 0.25)', 
+                        paddingLeft: '2.75rem', 
+                        paddingRight: '1rem', 
+                        paddingTop: '0.85rem', 
+                        paddingBottom: '0.85rem',
+                        border: fieldErrors.email ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                        borderRadius: '0.75rem', 
+                        width: '100%', 
+                        color: '#fff',
+                        outline: 'none', 
+                        transition: 'all 0.2s', 
+                        fontSize: '0.975rem',
+                        boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                        opacity: isLoading ? 0.7 : 1,
                       }}
                       onFocus={e => { 
                         if (!fieldErrors.email) {
                           e.currentTarget.style.borderColor = 'var(--primary)'; 
-                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                          e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                         }
                       }}
                       onBlur={e => { 
                         if (!fieldErrors.email) {
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                           e.currentTarget.style.boxShadow = 'none'; 
                         }
                       }}
@@ -358,7 +405,10 @@ export function SignUp() {
 
                 {/* Phone Number Field */}
                 <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                  <label 
+                    htmlFor="signup-phone"
+                    style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                  >
                     Phone Number <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -366,23 +416,37 @@ export function SignUp() {
                       <Phone size={18} />
                     </div>
                     <input 
+                      id="signup-phone"
                       type="tel" 
+                      autoComplete="tel"
+                      disabled={isLoading}
                       style={{ 
-                        background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                        border: fieldErrors.phone ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                        borderRadius: '0.75rem', width: '100%', color: '#fff',
-                        outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                        boxShadow: fieldErrors.phone ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                        background: 'rgba(0, 0, 0, 0.25)', 
+                        paddingLeft: '2.75rem', 
+                        paddingRight: '1rem', 
+                        paddingTop: '0.85rem', 
+                        paddingBottom: '0.85rem',
+                        border: fieldErrors.phone ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                        borderRadius: '0.75rem', 
+                        width: '100%', 
+                        color: '#fff',
+                        outline: 'none', 
+                        transition: 'all 0.2s', 
+                        fontSize: '0.975rem',
+                        boxShadow: fieldErrors.phone ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                        opacity: isLoading ? 0.7 : 1,
                       }}
                       onFocus={e => { 
                         if (!fieldErrors.phone) {
                           e.currentTarget.style.borderColor = 'var(--primary)'; 
-                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                          e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                         }
                       }}
                       onBlur={e => { 
                         if (!fieldErrors.phone) {
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                           e.currentTarget.style.boxShadow = 'none'; 
                         }
                       }}
@@ -406,8 +470,11 @@ export function SignUp() {
                 </div>
 
                 {/* Password Field */}
-                <div style={{ marginBottom: '2.25rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                <div style={{ marginBottom: '2rem' }}>
+                  <label 
+                    htmlFor="signup-password"
+                    style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                  >
                     Password <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
@@ -415,23 +482,37 @@ export function SignUp() {
                       <Lock size={18} />
                     </div>
                     <input 
+                      id="signup-password"
                       type={showPassword ? 'text' : 'password'} 
+                      autoComplete="new-password"
+                      disabled={isLoading}
                       style={{ 
-                        background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '2.75rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                        border: fieldErrors.password ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                        borderRadius: '0.75rem', width: '100%', color: '#fff',
-                        outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                        boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                        background: 'rgba(0, 0, 0, 0.25)', 
+                        paddingLeft: '2.75rem', 
+                        paddingRight: '2.75rem', 
+                        paddingTop: '0.85rem', 
+                        paddingBottom: '0.85rem',
+                        border: fieldErrors.password ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                        borderRadius: '0.75rem', 
+                        width: '100%', 
+                        color: '#fff',
+                        outline: 'none', 
+                        transition: 'all 0.2s', 
+                        fontSize: '0.975rem',
+                        boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                        opacity: isLoading ? 0.7 : 1,
                       }}
                       onFocus={e => { 
                         if (!fieldErrors.password) {
                           e.currentTarget.style.borderColor = 'var(--primary)'; 
-                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                          e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                          e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                         }
                       }}
                       onBlur={e => { 
                         if (!fieldErrors.password) {
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                           e.currentTarget.style.boxShadow = 'none'; 
                         }
                       }}
@@ -469,18 +550,22 @@ export function SignUp() {
 
                 <motion.button 
                   type="submit" 
-                  whileHover={{ scale: 1.02, translateY: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ 
-                    width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
-                    background: 'linear-gradient(135deg, #4f46e5, #6366f1)', color: '#fff', fontSize: '1.05rem', fontWeight: 600,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                    boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.4)', transition: 'box-shadow 0.2s'
-                  }} 
+                  whileHover={isLoading ? {} : { scale: 1.01, translateY: -2 }}
+                  whileTap={isLoading ? {} : { scale: 0.98 }}
                   disabled={isLoading}
+                  style={{ 
+                    width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    background: isLoading ? 'rgba(79, 70, 229, 0.5)' : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)', 
+                    color: '#fff', fontSize: '1.05rem', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                    boxShadow: isLoading ? 'none' : '0 10px 25px -5px rgba(109, 93, 251, 0.45)', 
+                    transition: 'all 0.2s',
+                    opacity: isLoading ? 0.75 : 1,
+                  }} 
                 >
                   {isLoading ? (
-                    <span style={{ display: 'inline-block', width: '22px', height: '22px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
+                    <LoadingSpinner size="sm" color="#fff" label="Creating account..." />
                   ) : (
                     <>Create Account <ArrowRight size={18} /></>
                   )}
@@ -490,9 +575,6 @@ export function SignUp() {
           </div>
         </div>
       </motion.div>
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </main>
   );
 }

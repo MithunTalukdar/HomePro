@@ -4,6 +4,8 @@ import { fetchApi } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Briefcase, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 export function Login() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export function Login() {
   const [role, setRole] = useState<'customer' | 'technician'>(initialRole);
   
   const { login } = useAuth();
+  const { toast } = useToast();
   
   const from = location.state?.from?.pathname 
     ? (location.state.from.pathname + (location.state.from.search || ''))
@@ -63,6 +66,7 @@ export function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent multiple submissions
     setError('');
     setFieldErrors({});
     
@@ -79,6 +83,7 @@ export function Login() {
       });
       
       login(data, data.token);
+      toast.success(`Welcome back, ${data.name || 'there'}!`, 'Signed In');
       
       if (from) {
         navigate(from, { replace: true });
@@ -100,11 +105,15 @@ export function Login() {
       if (errField === 'password' || errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('incorrect') || errMsg.toLowerCase().includes('invalid password')) {
         setFieldErrors({ password: 'Invalid password. Please double check and try again.' });
         setError('Login failed: Invalid password. Please verify your credentials or click Forgot Password.');
+        toast.error('Invalid password. Please double check and try again.', 'Authentication Failed');
       } else if (errField === 'email' || errMsg.toLowerCase().includes('no account') || errMsg.toLowerCase().includes('not found') || errMsg.toLowerCase().includes('unregistered')) {
         setFieldErrors({ email: 'No account found with this email. Please verify or create an account.' });
         setError('Login failed: No account registered with this email address. Please sign up first.');
+        toast.error('No account registered with this email address.', 'User Not Found');
       } else {
-        setError(errMsg || 'Failed to sign in. Please verify your email and password.');
+        const fallbackMsg = errMsg || 'Failed to sign in. Please verify your email and password.';
+        setError(fallbackMsg);
+        toast.error(fallbackMsg, 'Sign In Failed');
       }
     } finally {
       setIsLoading(false);
@@ -115,43 +124,43 @@ export function Login() {
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', position: 'relative', overflow: 'hidden', padding: '2rem 1rem' }}>
       
       {/* Background Ambient Glows */}
-      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(34, 211, 238, 0.12) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
       
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         style={{ width: '100%', maxWidth: '480px', zIndex: 10, position: 'relative' }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #a5b4fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #c7d2fe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.5px' }}>
             Welcome Back
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
-            Sign in to continue to HomePro
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.5 }}>
+            Sign in to manage bookings and services on HomePro
           </p>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.6)', 
+          background: 'rgba(15, 23, 42, 0.72)', 
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderRadius: '1.5rem', 
-          border: '1px solid rgba(255, 255, 255, 0.08)', 
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.1)', 
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
           overflow: 'hidden'
         }}>
           
           {/* Top Auth Navigation Tabs */}
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <div style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderBottom: '2px solid var(--primary)', color: '#fff', fontWeight: 600, cursor: 'default' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ flex: 1, textAlign: 'center', padding: '1.15rem', background: 'rgba(255,255,255,0.04)', borderBottom: '2px solid var(--primary)', color: '#fff', fontWeight: 600, cursor: 'default' }}>
               Sign In
             </div>
             <button 
               type="button"
               onClick={() => navigate(`/auth/signup?type=${role}`)}
-              style={{ flex: 1, textAlign: 'center', padding: '1.25rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-muted)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ flex: 1, textAlign: 'center', padding: '1.15rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-muted)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseOver={e => e.currentTarget.style.color = '#fff'}
               onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}
             >
@@ -159,22 +168,23 @@ export function Login() {
             </button>
           </div>
 
-          <div style={{ padding: '2.5rem' }}>
+          <div style={{ padding: '2.25rem' }}>
             
             {/* Account Role Selector */}
-            <div style={{ marginBottom: '2rem' }}>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.75rem', fontWeight: 500 }}>Continue as</p>
-              <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ marginBottom: '1.75rem' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.65rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Continue as</p>
+              <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.3)', padding: '0.35rem', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <button
                   type="button"
                   onClick={() => setRole('customer')}
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
                     padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
-                    background: role === 'customer' ? 'rgba(79, 70, 229, 0.2)' : 'transparent',
+                    background: role === 'customer' ? 'rgba(79, 70, 229, 0.25)' : 'transparent',
                     color: role === 'customer' ? '#fff' : 'var(--text-muted)',
-                    border: role === 'customer' ? '1px solid rgba(79, 70, 229, 0.5)' : '1px solid transparent',
-                    transition: 'all 0.2s', fontWeight: 500
+                    border: role === 'customer' ? '1px solid rgba(109, 93, 251, 0.6)' : '1px solid transparent',
+                    boxShadow: role === 'customer' ? '0 0 15px rgba(109, 93, 251, 0.25)' : 'none',
+                    transition: 'all 0.2s', fontWeight: 600
                   }}
                 >
                   <User size={18} /> Customer
@@ -185,10 +195,11 @@ export function Login() {
                   style={{ 
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', 
                     padding: '0.75rem', borderRadius: '0.75rem', cursor: 'pointer',
-                    background: role === 'technician' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                    background: role === 'technician' ? 'rgba(16, 185, 129, 0.22)' : 'transparent',
                     color: role === 'technician' ? '#fff' : 'var(--text-muted)',
-                    border: role === 'technician' ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid transparent',
-                    transition: 'all 0.2s', fontWeight: 500
+                    border: role === 'technician' ? '1px solid rgba(16, 185, 129, 0.6)' : '1px solid transparent',
+                    boxShadow: role === 'technician' ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none',
+                    transition: 'all 0.2s', fontWeight: 600
                   }}
                 >
                   <Briefcase size={18} /> Technician
@@ -202,12 +213,12 @@ export function Login() {
               <AnimatePresence mode="wait">
                 {error && (
                   <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
+                    initial={{ opacity: 0, y: -8 }} 
                     animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0, y: -8 }}
                     style={{ 
-                      background: 'rgba(239, 68, 68, 0.12)', 
-                      color: '#f87171', 
+                      background: 'rgba(239, 68, 68, 0.14)', 
+                      color: '#fca5a5', 
                       padding: '0.85rem 1rem', 
                       borderRadius: '0.75rem', 
                       marginBottom: '1.5rem', 
@@ -215,11 +226,11 @@ export function Login() {
                       border: '1px solid rgba(239, 68, 68, 0.35)', 
                       display: 'flex', 
                       alignItems: 'flex-start',
-                      gap: '0.5rem',
-                      lineHeight: 1.4
+                      gap: '0.65rem',
+                      lineHeight: 1.45
                     }}
                   >
-                    <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#ef4444' }} />
                     <div>{error}</div>
                   </motion.div>
                 )}
@@ -227,7 +238,10 @@ export function Login() {
 
               {/* Email Address Field */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+                <label 
+                  htmlFor="login-email"
+                  style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                >
                   Email Address
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -235,29 +249,41 @@ export function Login() {
                     <Mail size={18} />
                   </div>
                   <input 
+                    id="login-email"
                     type="email" 
+                    autoComplete="email"
+                    disabled={isLoading}
                     style={{ 
-                      background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                      border: `1px solid ${fieldErrors.email ? '#ef4444' : 'rgba(255, 255, 255, 0.1)'}`, 
-                      borderRadius: '0.75rem', width: '100%', color: '#fff',
-                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                      boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                      background: 'rgba(0, 0, 0, 0.25)', 
+                      paddingLeft: '2.75rem', 
+                      paddingRight: '1rem', 
+                      paddingTop: '0.85rem', 
+                      paddingBottom: '0.85rem',
+                      border: `1px solid ${fieldErrors.email ? '#ef4444' : 'rgba(255, 255, 255, 0.12)'}`, 
+                      borderRadius: '0.75rem', 
+                      width: '100%', 
+                      color: '#fff',
+                      outline: 'none', 
+                      transition: 'all 0.2s', 
+                      fontSize: '0.975rem',
+                      boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                      opacity: isLoading ? 0.7 : 1,
                     }}
                     onFocus={e => { 
                       if (!fieldErrors.email) {
                         e.currentTarget.style.borderColor = 'var(--primary)'; 
-                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; 
-                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                       }
                     }}
                     onBlur={e => { 
                       if (!fieldErrors.email) {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
-                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; 
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                         e.currentTarget.style.boxShadow = 'none'; 
                       }
                     }}
-                    placeholder="Enter your email"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={e => {
                       setEmail(e.target.value);
@@ -266,17 +292,23 @@ export function Login() {
                     }}
                   />
                 </div>
-                {/* Specific Inline Email Error */}
                 {fieldErrors.email && (
-                  <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                  >
                     <AlertCircle size={14} /> {fieldErrors.email}
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
               {/* Password Field */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label 
+                  htmlFor="login-password"
+                  style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                >
                   Password
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -284,25 +316,37 @@ export function Login() {
                     <Lock size={18} />
                   </div>
                   <input 
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'} 
+                    autoComplete="current-password"
+                    disabled={isLoading}
                     style={{ 
-                      background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '2.75rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                      border: `1px solid ${fieldErrors.password ? '#ef4444' : 'rgba(255, 255, 255, 0.1)'}`, 
-                      borderRadius: '0.75rem', width: '100%', color: '#fff',
-                      outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                      boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                      background: 'rgba(0, 0, 0, 0.25)', 
+                      paddingLeft: '2.75rem', 
+                      paddingRight: '2.75rem', 
+                      paddingTop: '0.85rem', 
+                      paddingBottom: '0.85rem',
+                      border: `1px solid ${fieldErrors.password ? '#ef4444' : 'rgba(255, 255, 255, 0.12)'}`, 
+                      borderRadius: '0.75rem', 
+                      width: '100%', 
+                      color: '#fff',
+                      outline: 'none', 
+                      transition: 'all 0.2s', 
+                      fontSize: '0.975rem',
+                      boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                      opacity: isLoading ? 0.7 : 1,
                     }}
                     onFocus={e => { 
                       if (!fieldErrors.password) {
                         e.currentTarget.style.borderColor = 'var(--primary)'; 
-                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.05)'; 
-                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.1)'; 
+                        e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                        e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
                       }
                     }}
                     onBlur={e => { 
                       if (!fieldErrors.password) {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; 
-                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'; 
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
                         e.currentTarget.style.boxShadow = 'none'; 
                       }
                     }}
@@ -323,17 +367,20 @@ export function Login() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {/* Specific Inline Password Error */}
                 {fieldErrors.password && (
-                  <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                  >
                     <AlertCircle size={14} /> {fieldErrors.password}
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
               {/* Forgot Password Link */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
-                <Link to="/auth/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--primary-light)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'var(--primary-light)'}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+                <Link to="/auth/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--primary-light)', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'var(--primary-light)'}>
                   Forgot Password?
                 </Link>
               </div>
@@ -341,18 +388,22 @@ export function Login() {
               {/* Submit Button */}
               <motion.button 
                 type="submit" 
-                whileHover={{ scale: 1.02, translateY: -2 }}
-                whileTap={{ scale: 0.98 }}
-                style={{ 
-                  width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
-                  background: 'linear-gradient(135deg, #4f46e5, #6366f1)', color: '#fff', fontSize: '1.05rem', fontWeight: 600,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.4)', transition: 'box-shadow 0.2s'
-                }} 
+                whileHover={isLoading ? {} : { scale: 1.01, translateY: -2 }}
+                whileTap={isLoading ? {} : { scale: 0.98 }}
                 disabled={isLoading}
+                style={{ 
+                  width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  background: isLoading ? 'rgba(79, 70, 229, 0.5)' : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)', 
+                  color: '#fff', fontSize: '1.05rem', fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                  boxShadow: isLoading ? 'none' : '0 10px 25px -5px rgba(109, 93, 251, 0.45)', 
+                  transition: 'all 0.2s',
+                  opacity: isLoading ? 0.75 : 1,
+                }} 
               >
                 {isLoading ? (
-                  <span style={{ display: 'inline-block', width: '22px', height: '22px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
+                  <LoadingSpinner size="sm" color="#fff" label="Signing in..." />
                 ) : (
                   <>Sign In <ArrowRight size={18} /></>
                 )}
@@ -362,9 +413,6 @@ export function Login() {
           </div>
         </div>
       </motion.div>
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </main>
   );
 }

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Clock, MapPin, Calendar, Star, ChevronRight, CheckCircle2, Truck, Wrench, PackageCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { fetchApi } from '../../services/api';
+import { Skeleton, SkeletonCard, SkeletonGrid } from '../../components/common/Skeleton';
 
 export function Overview() {
   const [activeBooking, setActiveBooking] = useState<any>(null);
@@ -17,7 +18,6 @@ export function Overview() {
     try {
       const data = await fetchApi('/bookings/my');
       
-
       const active = data.find((b: any) => !['COMPLETED', 'CANCELLED'].includes(b.status));
       const recent = data.filter((b: any) => ['COMPLETED', 'CANCELLED'].includes(b.status));
 
@@ -30,7 +30,22 @@ export function Overview() {
     }
   };
 
-  if (isLoading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}><span className="dot-pulse">...</span></div>;
+  if (isLoading) {
+    return (
+      <div className="animate-fade-in" style={{ padding: '0.5rem 0' }}>
+        <Skeleton width="240px" height="2rem" style={{ marginBottom: '0.5rem' }} />
+        <Skeleton width="360px" height="1rem" style={{ marginBottom: '2.5rem' }} />
+        <div style={{ marginBottom: '2.5rem' }}>
+          <Skeleton width="180px" height="1.25rem" style={{ marginBottom: '1rem' }} />
+          <SkeletonCard height="200px" />
+        </div>
+        <div>
+          <Skeleton width="180px" height="1.25rem" style={{ marginBottom: '1rem' }} />
+          <SkeletonGrid count={2} height="120px" />
+        </div>
+      </div>
+    );
+  }
 
   const getStatusClass = (status: string) => {
     if (['REQUESTED', 'ON_THE_WAY', 'ARRIVED'].includes(status)) return 'pending';

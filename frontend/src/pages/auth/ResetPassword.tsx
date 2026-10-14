@@ -3,11 +3,14 @@ import { Link, useNavigate, useSearchParams, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Lock, CheckCircle2, AlertCircle, Key, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { fetchApi } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 export function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const params = useParams();
+  const { toast } = useToast();
 
   const initialEmail = searchParams.get('email') || '';
   const initialCode = searchParams.get('code') || searchParams.get('token') || (params as any).token || '';
@@ -70,6 +73,7 @@ export function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent duplicate submissions
     setError('');
     setFieldErrors({});
 
@@ -90,17 +94,22 @@ export function ResetPassword() {
         }),
       });
       setIsSuccess(true);
+      toast.success('Your password has been successfully reset!', 'Password Updated');
       setTimeout(() => navigate('/auth/login'), 2500);
     } catch (err: any) {
       const errMsg = err.message || '';
       if (errMsg.toLowerCase().includes('code') || errMsg.toLowerCase().includes('token') || errMsg.toLowerCase().includes('expired') || errMsg.toLowerCase().includes('invalid')) {
         setFieldErrors({ code: errMsg });
         setError(errMsg);
+        toast.error('The verification code is invalid or has expired.', 'Reset Failed');
       } else if (errMsg.toLowerCase().includes('email')) {
         setFieldErrors({ email: errMsg });
         setError(errMsg);
+        toast.error('Please verify your registered email address.', 'Reset Failed');
       } else {
-        setError(errMsg || 'Failed to reset password. Please verify the code and try again.');
+        const fallbackMsg = errMsg || 'Failed to reset password. Please verify the code and try again.';
+        setError(fallbackMsg);
+        toast.error(fallbackMsg, 'Reset Failed');
       }
     } finally {
       setIsLoading(false);
@@ -111,7 +120,7 @@ export function ResetPassword() {
     return (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', padding: '2rem 1rem' }}>
         <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.92, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           style={{ 
             maxWidth: '440px', width: '100%', 
@@ -120,12 +129,12 @@ export function ResetPassword() {
             WebkitBackdropFilter: 'blur(20px)',
             padding: '3rem 2rem', 
             borderRadius: '1.5rem', 
-            border: '1px solid rgba(16, 185, 129, 0.3)', 
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(16, 185, 129, 0.35)', 
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6)', 
             textAlign: 'center' 
           }}
         >
-          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
             <CheckCircle2 size={40} />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.75rem', color: '#fff' }}>Password Reset Complete!</h2>
@@ -143,32 +152,32 @@ export function ResetPassword() {
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--background)', position: 'relative', overflow: 'hidden', padding: '2rem 1rem' }}>
       {/* Background Ambient Glows */}
-      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(70px)', zIndex: 0 }} />
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         style={{ width: '100%', maxWidth: '480px', zIndex: 10, position: 'relative' }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #a5b4fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(to right, #fff, #c7d2fe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.5px' }}>
             Set New Password
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
-            Enter your email and the 6-digit code received in your inbox
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.5 }}>
+            Enter your email and the 6-digit verification code received in your inbox
           </p>
         </div>
 
         <div style={{ 
-          background: 'rgba(15, 23, 42, 0.65)', 
+          background: 'rgba(15, 23, 42, 0.72)', 
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderRadius: '1.5rem', 
-          border: '1px solid rgba(255, 255, 255, 0.08)', 
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-          padding: '2.5rem'
+          border: '1px solid rgba(255, 255, 255, 0.1)', 
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+          padding: '2.25rem'
         }}>
           {/* Global Alert */}
           <AnimatePresence mode="wait">
@@ -178,8 +187,8 @@ export function ResetPassword() {
                 animate={{ opacity: 1, height: 'auto' }} 
                 exit={{ opacity: 0, height: 0 }}
                 style={{ 
-                  background: 'rgba(239, 68, 68, 0.12)', 
-                  color: '#f87171', 
+                  background: 'rgba(239, 68, 68, 0.14)', 
+                  color: '#fca5a5', 
                   padding: '0.85rem 1rem', 
                   borderRadius: '0.75rem', 
                   marginBottom: '1.5rem', 
@@ -190,8 +199,8 @@ export function ResetPassword() {
                   gap: '0.65rem'
                 }}
               >
-                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div style={{ lineHeight: 1.4 }}>{error}</div>
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px', color: '#ef4444' }} />
+                <div style={{ lineHeight: 1.45 }}>{error}</div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -199,7 +208,10 @@ export function ResetPassword() {
           <form onSubmit={handleSubmit} noValidate>
             {/* Email Address Field */}
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+              <label 
+                htmlFor="reset-email"
+                style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+              >
                 Email Address
               </label>
               <div style={{ position: 'relative' }}>
@@ -207,24 +219,51 @@ export function ResetPassword() {
                   <Mail size={18} />
                 </div>
                 <input
+                  id="reset-email"
                   type="email"
+                  autoComplete="email"
                   placeholder="e.g. name@example.com"
                   value={email}
+                  disabled={isLoading}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: undefined });
+                    if (error) setError('');
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                    border: fieldErrors.email ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '0.75rem', width: '100%', color: '#fff',
-                    outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                    boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                    background: 'rgba(0, 0, 0, 0.25)', 
+                    paddingLeft: '2.75rem', 
+                    paddingRight: '1rem', 
+                    paddingTop: '0.85rem', 
+                    paddingBottom: '0.85rem',
+                    border: fieldErrors.email ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                    borderRadius: '0.75rem', 
+                    width: '100%', 
+                    color: '#fff',
+                    outline: 'none', 
+                    transition: 'all 0.2s', 
+                    fontSize: '0.975rem',
+                    boxShadow: fieldErrors.email ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                  onFocus={e => { 
+                    if (!fieldErrors.email) {
+                      e.currentTarget.style.borderColor = 'var(--primary)'; 
+                      e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                      e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
+                    }
+                  }}
+                  onBlur={e => { 
+                    if (!fieldErrors.email) {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
+                      e.currentTarget.style.boxShadow = 'none'; 
+                    }
                   }}
                 />
               </div>
               {fieldErrors.email && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <AlertCircle size={13} /> {fieldErrors.email}
                 </motion.div>
               )}
@@ -233,8 +272,11 @@ export function ResetPassword() {
             {/* 6-Digit Reset Code / Token Field */}
             <div style={{ marginBottom: '1.25rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
-                  6-Digit Reset Code (from email)
+                <label 
+                  htmlFor="reset-code"
+                  style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+                >
+                  6-Digit Reset Code
                 </label>
                 {initialCode && (
                   <span style={{ fontSize: '0.75rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -247,25 +289,53 @@ export function ResetPassword() {
                   <Key size={18} />
                 </div>
                 <input 
+                  id="reset-code"
                   type="text"
                   placeholder="e.g. 849201"
                   value={code}
                   maxLength={50}
+                  disabled={isLoading}
                   onChange={(e) => {
                     setCode(e.target.value);
                     if (fieldErrors.code) setFieldErrors({ ...fieldErrors, code: undefined });
+                    if (error) setError('');
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '1rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                    border: fieldErrors.code ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '0.75rem', width: '100%', color: '#fff',
-                    outline: 'none', transition: 'all 0.2s', fontSize: '1.05rem', letterSpacing: '2px', fontWeight: 600,
-                    boxShadow: fieldErrors.code ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                    background: 'rgba(0, 0, 0, 0.25)', 
+                    paddingLeft: '2.75rem', 
+                    paddingRight: '1rem', 
+                    paddingTop: '0.85rem', 
+                    paddingBottom: '0.85rem',
+                    border: fieldErrors.code ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                    borderRadius: '0.75rem', 
+                    width: '100%', 
+                    color: '#fff',
+                    outline: 'none', 
+                    transition: 'all 0.2s', 
+                    fontSize: '1.05rem', 
+                    letterSpacing: '2px', 
+                    fontWeight: 600,
+                    boxShadow: fieldErrors.code ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                  onFocus={e => { 
+                    if (!fieldErrors.code) {
+                      e.currentTarget.style.borderColor = 'var(--primary)'; 
+                      e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                      e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
+                    }
+                  }}
+                  onBlur={e => { 
+                    if (!fieldErrors.code) {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
+                      e.currentTarget.style.boxShadow = 'none'; 
+                    }
                   }}
                 />
               </div>
               {fieldErrors.code && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <AlertCircle size={13} /> {fieldErrors.code}
                 </motion.div>
               )}
@@ -273,7 +343,10 @@ export function ResetPassword() {
 
             {/* New Password */}
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+              <label 
+                htmlFor="reset-new-password"
+                style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+              >
                 New Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -281,19 +354,45 @@ export function ResetPassword() {
                   <Lock size={18} />
                 </div>
                 <input
+                  id="reset-new-password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter new password (min 6 characters)"
+                  placeholder="Min 6 characters"
                   value={password}
+                  disabled={isLoading}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: undefined });
+                    if (error) setError('');
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '2.75rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                    border: fieldErrors.password ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '0.75rem', width: '100%', color: '#fff',
-                    outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                    boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                    background: 'rgba(0, 0, 0, 0.25)', 
+                    paddingLeft: '2.75rem', 
+                    paddingRight: '2.75rem', 
+                    paddingTop: '0.85rem', 
+                    paddingBottom: '0.85rem',
+                    border: fieldErrors.password ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                    borderRadius: '0.75rem', 
+                    width: '100%', 
+                    color: '#fff',
+                    outline: 'none', 
+                    transition: 'all 0.2s', 
+                    fontSize: '0.975rem',
+                    boxShadow: fieldErrors.password ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                  onFocus={e => { 
+                    if (!fieldErrors.password) {
+                      e.currentTarget.style.borderColor = 'var(--primary)'; 
+                      e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                      e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
+                    }
+                  }}
+                  onBlur={e => { 
+                    if (!fieldErrors.password) {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
+                      e.currentTarget.style.boxShadow = 'none'; 
+                    }
                   }}
                 />
                 <button
@@ -306,7 +405,7 @@ export function ResetPassword() {
                 </button>
               </div>
               {fieldErrors.password && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <AlertCircle size={13} /> {fieldErrors.password}
                 </motion.div>
               )}
@@ -314,7 +413,10 @@ export function ResetPassword() {
 
             {/* Confirm New Password */}
             <div style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>
+              <label 
+                htmlFor="reset-confirm-password"
+                style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}
+              >
                 Confirm New Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -322,19 +424,45 @@ export function ResetPassword() {
                   <Lock size={18} />
                 </div>
                 <input
+                  id="reset-confirm-password"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Repeat your new password"
+                  placeholder="Repeat new password"
                   value={confirmPassword}
+                  disabled={isLoading}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value);
                     if (fieldErrors.confirmPassword) setFieldErrors({ ...fieldErrors, confirmPassword: undefined });
+                    if (error) setError('');
                   }}
                   style={{
-                    background: 'rgba(0, 0, 0, 0.2)', paddingLeft: '2.75rem', paddingRight: '2.75rem', paddingTop: '0.875rem', paddingBottom: '0.875rem',
-                    border: fieldErrors.confirmPassword ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)', 
-                    borderRadius: '0.75rem', width: '100%', color: '#fff',
-                    outline: 'none', transition: 'all 0.2s', fontSize: '1rem',
-                    boxShadow: fieldErrors.confirmPassword ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none'
+                    background: 'rgba(0, 0, 0, 0.25)', 
+                    paddingLeft: '2.75rem', 
+                    paddingRight: '2.75rem', 
+                    paddingTop: '0.85rem', 
+                    paddingBottom: '0.85rem',
+                    border: fieldErrors.confirmPassword ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)', 
+                    borderRadius: '0.75rem', 
+                    width: '100%', 
+                    color: '#fff',
+                    outline: 'none', 
+                    transition: 'all 0.2s', 
+                    fontSize: '0.975rem',
+                    boxShadow: fieldErrors.confirmPassword ? '0 0 0 3px rgba(239, 68, 68, 0.2)' : 'none',
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                  onFocus={e => { 
+                    if (!fieldErrors.confirmPassword) {
+                      e.currentTarget.style.borderColor = 'var(--primary)'; 
+                      e.currentTarget.style.background = 'rgba(79, 70, 229, 0.08)'; 
+                      e.currentTarget.style.boxShadow = '0 0 0 4px rgba(109, 93, 251, 0.25)'; 
+                    }
+                  }}
+                  onBlur={e => { 
+                    if (!fieldErrors.confirmPassword) {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)'; 
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.25)'; 
+                      e.currentTarget.style.boxShadow = 'none'; 
+                    }
                   }}
                 />
                 <button
@@ -347,7 +475,7 @@ export function ResetPassword() {
                 </button>
               </div>
               {fieldErrors.confirmPassword && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <AlertCircle size={13} /> {fieldErrors.confirmPassword}
                 </motion.div>
               )}
@@ -355,18 +483,22 @@ export function ResetPassword() {
 
             <motion.button 
               type="submit" 
-              whileHover={{ scale: 1.02, translateY: -2 }}
-              whileTap={{ scale: 0.98 }}
-              style={{ 
-                width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg, #4f46e5, #6366f1)', color: '#fff', fontSize: '1.05rem', fontWeight: 600,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.4)', transition: 'box-shadow 0.2s'
-              }} 
+              whileHover={isLoading ? {} : { scale: 1.01, translateY: -2 }}
+              whileTap={isLoading ? {} : { scale: 0.98 }}
               disabled={isLoading}
+              style={{ 
+                width: '100%', height: '52px', borderRadius: '0.75rem', border: 'none',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                background: isLoading ? 'rgba(79, 70, 229, 0.5)' : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)', 
+                color: '#fff', fontSize: '1.05rem', fontWeight: 600,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                boxShadow: isLoading ? 'none' : '0 10px 25px -5px rgba(109, 93, 251, 0.45)', 
+                transition: 'all 0.2s',
+                opacity: isLoading ? 0.75 : 1,
+              }} 
             >
               {isLoading ? (
-                <span style={{ display: 'inline-block', width: '22px', height: '22px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
+                <LoadingSpinner size="sm" color="#fff" label="Updating password..." />
               ) : (
                 <>Update Password <ArrowRight size={18} /></>
               )}
@@ -380,9 +512,6 @@ export function ResetPassword() {
           </div>
         </div>
       </motion.div>
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </main>
   );
 }

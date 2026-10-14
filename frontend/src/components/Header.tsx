@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LoginSelectionModal } from './auth/LoginSelectionModal';
 import { useAuth } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
+import { useToast } from '../context/ToastContext';
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -54,8 +55,11 @@ export function Header() {
     setIsMobileMenuOpen(false);
   };
 
+  const { toast } = useToast();
+
   const handleLogout = () => {
     logout();
+    toast.info('You have signed out successfully.', 'Signed Out');
     navigate('/');
     setIsMobileMenuOpen(false);
   };
@@ -173,18 +177,74 @@ export function Header() {
           
           <div className="auth-buttons" style={{ alignItems: 'center' }}>
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <Link 
-                  to={user.role === 'TECHNICIAN' ? '/technician/dashboard/overview' : '/dashboard/overview'} 
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-main)', textDecoration: 'none' }}
+                  to={user.role === 'TECHNICIAN' ? '/technician/dashboard/overview' : user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? '/admin/dashboard/overview' : '/dashboard/overview'} 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.65rem', 
+                    padding: '0.35rem 0.75rem 0.35rem 0.45rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: 'var(--radius-full)',
+                    color: 'var(--text-main)', 
+                    textDecoration: 'none',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary-light)';
+                    e.currentTarget.style.background = 'rgba(109, 93, 251, 0.12)';
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  }}
+                  title="View Dashboard"
                 >
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: user.role === 'TECHNICIAN' ? 'var(--accent-cyan)' : 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: 'var(--shadow-md)' }}>
-                    {user.role === 'TECHNICIAN' ? <Briefcase size={18} /> : <User size={18} />}
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ 
+                      width: '32px', 
+                      height: '32px', 
+                      borderRadius: '50%', 
+                      background: user.role === 'TECHNICIAN' ? 'linear-gradient(135deg, #10B981, #059669)' : user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' ? 'linear-gradient(135deg, #EC4899, #8B5CF6)' : 'linear-gradient(135deg, var(--primary), var(--primary-dark))', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      color: 'white', 
+                      boxShadow: 'var(--shadow-sm)' 
+                    }}>
+                      {user.role === 'TECHNICIAN' ? <Briefcase size={16} /> : <User size={16} />}
+                    </div>
+                    {/* Active session pulse dot */}
+                    <span 
+                      style={{
+                        position: 'absolute',
+                        bottom: '-1px',
+                        right: '-1px',
+                        width: '9px',
+                        height: '9px',
+                        borderRadius: '50%',
+                        background: '#10B981',
+                        border: '2px solid var(--bg-primary)',
+                        boxShadow: '0 0 6px #10B981'
+                      }}
+                      title="Session Active"
+                    />
                   </div>
-                  <span style={{ fontWeight: 500, fontSize: '0.9rem', display: 'none' }}>{user.name || 'Dashboard'}</span>
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#fff', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user.name?.split(' ')[0] || 'Dashboard'}
+                  </span>
                 </Link>
-                <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '0.6rem', border: '1px solid var(--border)' }} title="Logout">
-                  <LogOut size={18} />
+                <button 
+                  onClick={handleLogout} 
+                  className="btn btn-secondary" 
+                  style={{ padding: '0.55rem', borderRadius: '50%', border: '1px solid var(--border)', color: 'var(--text-muted)' }} 
+                  title="Logout"
+                  onMouseOver={e => e.currentTarget.style.color = '#EF4444'}
+                  onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                >
+                  <LogOut size={16} />
                 </button>
               </div>
             ) : (

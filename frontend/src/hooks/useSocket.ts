@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
+const rawBase = (import.meta.env.VITE_API_URL as string | undefined) || '';
+const SOCKET_URL = rawBase ? rawBase.replace(/\/$/, '') : undefined;
 
 let globalSocket: Socket | null = null;
 let activeConnections = 0;
@@ -16,8 +17,13 @@ export function useSocket(token?: string | null) {
     activeConnections++;
 
     if (!globalSocket) {
-      globalSocket = io(SOCKET_URL, {
-        auth: { token }
+      globalSocket = io(SOCKET_URL || '', {
+        auth: { token },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
       });
     }
 

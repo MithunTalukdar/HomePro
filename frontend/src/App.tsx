@@ -1,7 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import { LocationProvider } from './context/LocationContext';
 import { LocationModal } from './components/LocationModal';
+import { ToastContainer } from './components/common/ToastContainer';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { BrandedLoader } from './components/common/LoadingSpinner';
 import { Suspense, lazy } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -54,97 +58,107 @@ const AdminSettings = lazy(() => import('./pages/admin/Settings').then(m => ({ d
 
 import './App.css';
 
-const Loader = () => <div style={{ padding: '4rem', textAlign: 'center', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="dot-pulse">...</span></div>;
+const PageSuspenseFallback = () => (
+  <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <BrandedLoader message="Loading content..." />
+  </div>
+);
 
 function App() {
   return (
-    <AuthProvider>
-      <LocationProvider>
-        <Router>
-      <div className="app-container">
-        <Routes>
-          {/* Public & Customer Routes */}
-          <Route path="/" element={<><Header /><Home /><Footer /></>} />
-          <Route path="/services" element={<><Header /><Services /><Footer /></>} />
-          <Route path="/services/:categorySlug" element={<><Header /><CategoryPage /><Footer /></>} />
-          <Route path="/services/:categorySlug/:serviceSlug" element={<><Header /><ServiceDetail /><Footer /></>} />
-          
-          <Route path="/book/:serviceId" element={
-            <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
-              <><Header /><BookingWizard /><Footer /></>
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/booking-confirmation/:id" element={
-            <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
-              <><Header /><BookingConfirmation /><Footer /></>
-            </ProtectedRoute>
-          } />
-          
-          {/* Auth Routes */}
-          <Route path="/auth/login" element={<><Header /><Login /><Footer /></>} />
-          <Route path="/auth/signup" element={<><Header /><SignUp /><Footer /></>} />
-          <Route path="/auth/verify-otp" element={<><Header /><VerifyOTP /><Footer /></>} />
-          <Route path="/auth/forgot-password" element={<><Header /><ForgotPassword /><Footer /></>} />
-          <Route path="/auth/reset-password" element={<><Header /><ResetPassword /><Footer /></>} />
-          <Route path="/auth/reset-password/:token" element={<><Header /><ResetPassword /><Footer /></>} />
-          <Route path="/technician/register" element={<TechnicianOnboarding />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <LocationProvider>
+            <Router>
+              <div className="app-container">
+                <Routes>
+                  {/* Public & Customer Routes */}
+                  <Route path="/" element={<><Header /><Home /><Footer /></>} />
+                  <Route path="/services" element={<><Header /><Services /><Footer /></>} />
+                  <Route path="/services/:categorySlug" element={<><Header /><CategoryPage /><Footer /></>} />
+                  <Route path="/services/:categorySlug/:serviceSlug" element={<><Header /><ServiceDetail /><Footer /></>} />
+                  
+                  <Route path="/book/:serviceId" element={
+                    <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
+                      <><Header /><BookingWizard /><Footer /></>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/booking-confirmation/:id" element={
+                    <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
+                      <><Header /><BookingConfirmation /><Footer /></>
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/auth/login" element={<><Header /><Login /><Footer /></>} />
+                  <Route path="/auth/signup" element={<><Header /><SignUp /><Footer /></>} />
+                  <Route path="/auth/verify-otp" element={<><Header /><VerifyOTP /><Footer /></>} />
+                  <Route path="/auth/forgot-password" element={<><Header /><ForgotPassword /><Footer /></>} />
+                  <Route path="/auth/reset-password" element={<><Header /><ResetPassword /><Footer /></>} />
+                  <Route path="/auth/reset-password/:token" element={<><Header /><ResetPassword /><Footer /></>} />
+                  <Route path="/technician/register" element={<TechnicianOnboarding />} />
 
-          {/* Customer Dashboard */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
-              <Suspense fallback={<Loader />}><DashboardLayout /></Suspense>
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/dashboard/overview" replace />} />
-            <Route path="overview" element={<Overview />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="bookings/:id" element={<BookingTracker />} />
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="reviews" element={<Reviews />} />
-            <Route path="support" element={<Support />} />
-            <Route path="addresses" element={<Addresses />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+                  {/* Customer Dashboard */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute allowedRoles={['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']}>
+                      <Suspense fallback={<PageSuspenseFallback />}><DashboardLayout /></Suspense>
+                    </ProtectedRoute>
+                  }>
+                    <Route index element={<Navigate to="/dashboard/overview" replace />} />
+                    <Route path="overview" element={<Overview />} />
+                    <Route path="bookings" element={<Bookings />} />
+                    <Route path="bookings/:id" element={<BookingTracker />} />
+                    <Route path="invoices" element={<Invoices />} />
+                    <Route path="reviews" element={<Reviews />} />
+                    <Route path="support" element={<Support />} />
+                    <Route path="addresses" element={<Addresses />} />
+                    <Route path="profile" element={<Profile />} />
+                  </Route>
 
-          {/* Technician Dashboard */}
-          <Route path="/technician/dashboard" element={
-            <ProtectedRoute allowedRoles={['TECHNICIAN']}>
-              <Suspense fallback={<Loader />}><TechnicianDashboardLayout /></Suspense>
-            </ProtectedRoute>
-          }>
-            <Route path="overview" element={<TechnicianDashboardOverview />} />
-            <Route path="jobs/new" element={<NewJobs />} />
-            <Route path="active" element={<ActiveJobs />} />
-            <Route path="bookings/:id" element={<BookingTracker />} />
-            <Route path="history" element={<ActiveJobs />} />
-          </Route>
+                  {/* Technician Dashboard */}
+                  <Route path="/technician/dashboard" element={
+                    <ProtectedRoute allowedRoles={['TECHNICIAN']}>
+                      <Suspense fallback={<PageSuspenseFallback />}><TechnicianDashboardLayout /></Suspense>
+                    </ProtectedRoute>
+                  }>
+                    <Route path="overview" element={<TechnicianDashboardOverview />} />
+                    <Route path="jobs/new" element={<NewJobs />} />
+                    <Route path="active" element={<ActiveJobs />} />
+                    <Route path="bookings/:id" element={<BookingTracker />} />
+                    <Route path="history" element={<ActiveJobs />} />
+                  </Route>
 
-          {/* Admin Dashboard */}
-          <Route path="/admin/dashboard" element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
-              <Suspense fallback={<Loader />}><AdminLayout /></Suspense>
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/admin/dashboard/overview" replace />} />
-            <Route path="overview" element={<AdminOverview />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="technicians" element={<AdminTechnicians />} />
-            <Route path="services" element={<AdminServices />} />
-            <Route path="bookings" element={<AdminBookings />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="support" element={<AdminSupport />} />
-            <Route path="coupons" element={<AdminCoupons />} />
-            <Route path="audit-logs" element={<AdminAuditLogs />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
-        </Routes>
-        <AIAssistant />
-        <LocationModal />
-      </div>
-    </Router>
-    </LocationProvider>
-    </AuthProvider>
+                  {/* Admin Dashboard */}
+                  <Route path="/admin/dashboard" element={
+                    <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                      <Suspense fallback={<PageSuspenseFallback />}><AdminLayout /></Suspense>
+                    </ProtectedRoute>
+                  }>
+                    <Route index element={<Navigate to="/admin/dashboard/overview" replace />} />
+                    <Route path="overview" element={<AdminOverview />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="technicians" element={<AdminTechnicians />} />
+                    <Route path="services" element={<AdminServices />} />
+                    <Route path="bookings" element={<AdminBookings />} />
+                    <Route path="reviews" element={<AdminReviews />} />
+                    <Route path="support" element={<AdminSupport />} />
+                    <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="audit-logs" element={<AdminAuditLogs />} />
+                    <Route path="settings" element={<AdminSettings />} />
+                  </Route>
+                </Routes>
+                
+                <AIAssistant />
+                <LocationModal />
+                <ToastContainer />
+              </div>
+            </Router>
+          </LocationProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
